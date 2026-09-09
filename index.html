@@ -3,78 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crisis Support Simulator - Made by Jarrar</title>
+    <title>Crisis Support Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700;800;900&display=swap" rel="stylesheet">
     <style>
-        .chat-bg { background-color: #0b141a; }
-        .bubble-user { background-color: #005c4b; }
-        .bubble-persona { background-color: #202c33; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        body { 
+            font-family: 'Fredoka', cursive, sans-serif; 
+            user-select: none;
+        }
+
+        /* Cartoon 3D Capsule Buttons (Like Screenshot) */
+        .btn-cartoon {
+            background: linear-gradient(180deg, #ffd000 0%, #ff8800 100%);
+            border: 4px solid #5c2300;
+            box-shadow: inset 0px 4px 0px #ffeaa7, 0px 6px 0px #3d1700;
+            color: #ffffff;
+            text-shadow: -2px -2px 0 #5c2300, 2px -2px 0 #5c2300, -2px 2px 0 #5c2300, 2px 2px 0 #5c2300, 0px 3px 0 #3d1700;
+            border-radius: 28px;
+            transition: all 0.1s ease;
+        }
+
+        .btn-cartoon:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .btn-cartoon:active {
+            transform: translateY(4px);
+            box-shadow: inset 0px 2px 0px #ffeaa7, 0px 2px 0px #3d1700;
+        }
+
+        .btn-cartoon-green {
+            background: linear-gradient(180deg, #7cfc00 0%, #32cd32 100%);
+            border: 4px solid #145214;
+            box-shadow: inset 0px 4px 0px #b3ffb3, 0px 6px 0px #0e380e;
+            color: #ffffff;
+            text-shadow: -2px -2px 0 #145214, 2px -2px 0 #145214, -2px 2px 0 #145214, 2px 2px 0 #145214, 0px 3px 0 #0e380e;
+            border-radius: 28px;
+        }
+
+        .btn-cartoon-red {
+            background: linear-gradient(180deg, #ff4d4d 0%, #cc0000 100%);
+            border: 4px solid #4a0000;
+            box-shadow: inset 0px 4px 0px #ffb3b3, 0px 6px 0px #300000;
+            color: #ffffff;
+            text-shadow: -2px -2px 0 #4a0000, 2px -2px 0 #4a0000, -2px 2px 0 #4a0000, 2px 2px 0 #4a0000;
+            border-radius: 28px;
+        }
+
+        /* Cartoon Text Outlines */
+        .title-cartoon {
+            color: #ffcc00;
+            text-shadow: 
+                -3px -3px 0 #5c2300, 3px -3px 0 #5c2300, -3px 3px 0 #5c2300, 3px 3px 0 #5c2300,
+                -4px 0px 0 #5c2300, 4px 0px 0 #5c2300, 0px -4px 0 #5c2300, 0px 6px 0 #3d1700;
+        }
+
+        .chat-bg { background-color: #fef08a; }
+        .bubble-user { background-color: #3b82f6; color: white; border: 3px solid #1d4ed8; }
+        .bubble-persona { background-color: #ffffff; color: #1e293b; border: 3px solid #000; }
+
+        /* Pulse Highlight for Tutorial */
+        .tutorial-highlight {
+            outline: 5px solid #ff0055;
+            animation: pulse-border 0.8s infinite alternate;
+        }
+
+        @keyframes pulse-border {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
     </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 font-sans select-none">
+<body class="bg-emerald-800 text-slate-900 min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
 
     <!-- MAIN MENU SCREEN -->
-    <div id="main-menu" class="w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 flex flex-col items-center justify-between h-[680px] p-6 text-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/20 via-transparent to-red-950/20 pointer-events-none"></div>
+    <div id="main-menu" class="w-full max-w-md bg-cover bg-center rounded-3xl border-8 border-[#5c2300] shadow-[0px_12px_0px_0px_rgba(0,0,0,0.4)] flex flex-col items-center justify-between h-[680px] p-6 text-center relative overflow-hidden" style="background-image: linear-gradient(to bottom, #7dd3fc, #bae6fd 50%, #86efac 50%, #4ade80); position: relative;">
+        
+        <!-- Sun & Clouds Background Elements -->
+        <div class="absolute top-4 right-6 w-20 h-20 bg-amber-300 rounded-full border-4 border-[#5c2300] shadow-inner"></div>
+        <div class="absolute top-10 left-4 w-28 h-10 bg-white rounded-full border-4 border-[#5c2300]"></div>
 
+        <!-- Title Header -->
         <div class="mt-8 z-10">
-            <span class="text-xs uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/50">Interactive Story Game</span>
-            <h1 class="text-3xl font-extrabold tracking-tight mt-4 text-white">CRISIS SUPPORT<br><span class="text-emerald-500">SIMULATOR</span></h1>
-            <p class="text-xs text-gray-400 mt-2 tracking-wide font-medium">Made by Jarrar</p>
+            <h1 class="text-4xl font-black tracking-wide title-cartoon leading-tight">
+                CRISIS<br>SUPPORT
+            </h1>
+            <div class="bg-[#ffaa00] border-4 border-[#5c2300] text-white font-extrabold px-6 py-1 rounded-full text-sm inline-block shadow-[0px_4px_0px_#5c2300] mt-1">
+                SIMULATOR
+            </div>
         </div>
 
-        <div class="z-10 w-full max-w-xs space-y-4">
-            <div class="bg-gray-950/80 p-4 rounded-xl border border-gray-800/80 text-left space-y-2">
-                <label class="block text-xs font-semibold text-gray-300">OpenRouter API Key:</label>
-                <input type="password" id="menu-api-key" placeholder="sk-or-v1-..." class="w-full p-2.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500 transition">
-                <p class="text-[10px] text-gray-500">Your key stays private in your browser.</p>
-            </div>
+        <!-- Menu Buttons (Matching Image UI Style) -->
+        <div class="z-10 w-full max-w-xs space-y-3 mb-6">
+            <button onclick="startGameFromMenu()" class="btn-cartoon w-full py-3.5 text-2xl font-black tracking-wider uppercase">
+                PLAY
+            </button>
 
-            <button onclick="startGameFromMenu()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-base rounded-xl transition shadow-lg shadow-emerald-900/40 border border-emerald-400/30 flex items-center justify-center gap-2">
-                <span>PLAY GAME</span>
+            <button id="tutorial-btn" onclick="startTutorial()" class="btn-cartoon w-full py-3.5 text-2xl font-black tracking-wider uppercase">
+                TUTORIAL
+            </button>
+
+            <button onclick="alert('Game Created by Jarrar!')" class="btn-cartoon w-full py-3.5 text-2xl font-black tracking-wider uppercase">
+                CREDITS
             </button>
         </div>
 
-        <div class="z-10 mb-2">
-            <p class="text-[11px] text-gray-500">Listen, support, and save lives before the 5-minute timer runs out.</p>
+        <div class="z-10">
+            <span class="text-xs font-black text-[#5c2300] bg-white/80 px-3 py-1 rounded-full border-2 border-[#5c2300]">Made by Jarrar 🔥</span>
         </div>
     </div>
 
     <!-- GAME INTERFACE SCREEN -->
-    <div id="game-screen" class="hidden relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 flex flex-col h-[680px] overflow-hidden">
+    <div id="game-screen" class="hidden relative w-full max-w-md bg-white rounded-3xl border-8 border-[#5c2300] shadow-[0px_12px_0px_0px_rgba(0,0,0,0.4)] flex flex-col h-[680px] overflow-hidden">
         
         <!-- Header -->
-        <div class="p-3 bg-gray-800/95 border-b border-gray-700/60 flex justify-between items-center z-10">
-            <div class="flex items-center gap-2.5">
-                <button onclick="pauseGame()" class="text-gray-300 hover:text-white text-xs font-bold bg-gray-700/60 hover:bg-gray-600 px-2.5 py-1.5 rounded-lg border border-gray-600 transition">⏸ Pause</button>
+        <div class="p-3 bg-amber-400 border-b-4 border-[#5c2300] flex justify-between items-center z-10">
+            <div class="flex items-center gap-2">
+                <button onclick="pauseGame()" class="btn-cartoon px-3 py-1 text-xs font-black">
+                    PAUSE
+                </button>
                 <div class="relative">
-                    <img id="header-avatar" src="" class="w-10 h-10 rounded-full bg-gray-700 border-2 border-emerald-500">
-                    <span id="status-dot" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-gray-800 rounded-full"></span>
+                    <img id="header-avatar" src="" class="w-10 h-10 rounded-full bg-white border-2 border-[#5c2300]">
                 </div>
                 <div>
-                    <h1 class="font-bold text-xs sm:text-sm text-white flex items-center gap-1" id="persona-name">Name</h1>
-                    <p class="text-[10px] text-emerald-400 font-medium" id="persona-status">Online</p>
+                    <h1 class="font-extrabold text-sm text-black flex items-center gap-1" id="persona-name">Name</h1>
+                    <p class="text-[10px] text-amber-900 font-extrabold" id="persona-status">Online</p>
                 </div>
             </div>
 
-            <!-- Timer & Status Meters -->
-            <div class="flex flex-col items-end gap-1">
-                <div id="timer-display" class="text-xs font-extrabold text-amber-400 bg-gray-950 px-2 py-0.5 rounded border border-gray-800 font-mono">05:00</div>
+            <!-- Timer & Meters -->
+            <div class="flex flex-col items-end gap-1 relative">
+                <div id="timer-box" class="text-xs font-black text-white bg-[#5c2300] px-2.5 py-0.5 rounded-full border-2 border-black">
+                    ⏱️ <span id="timer-display">05:00</span>
+                </div>
                 <div class="flex gap-2">
-                    <!-- Distress Bar -->
                     <div class="text-right">
-                        <span class="text-[9px] text-gray-400 font-bold block">Distress</span>
-                        <div class="w-12 bg-gray-950 h-1.5 rounded-full overflow-hidden border border-gray-800 mt-0.5">
+                        <span class="text-[9px] font-black text-black block">Sadness 😭</span>
+                        <div class="w-16 bg-gray-200 h-3 rounded-full overflow-hidden border-2 border-[#5c2300]">
                             <div id="distress-bar" class="bg-red-500 h-full w-[80%] transition-all duration-500"></div>
-                        </div>
-                    </div>
-                    <!-- Anger Bar -->
-                    <div class="text-right">
-                        <span class="text-[9px] text-gray-400 font-bold block">Anger</span>
-                        <div class="w-12 bg-gray-950 h-1.5 rounded-full overflow-hidden border border-gray-800 mt-0.5">
-                            <div id="anger-bar" class="bg-orange-500 h-full w-[20%] transition-all duration-500"></div>
                         </div>
                     </div>
                 </div>
@@ -82,78 +149,68 @@
         </div>
 
         <!-- Mode & Character Selectors -->
-        <div class="p-2 bg-gray-950/90 border-b border-gray-800 flex flex-col gap-2 z-10">
-            <div class="flex gap-1 bg-gray-900 p-1 rounded-lg border border-gray-800">
-                <button id="btn-mode-easy" onclick="setMode('easy')" class="flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400">EASY</button>
-                <button id="btn-mode-normal" onclick="setMode('normal')" class="flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400">NORMAL</button>
-                <button id="btn-mode-hard" onclick="setMode('hard')" class="flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400">HARD (50+)</button>
+        <div id="mode-bar" class="p-2 bg-amber-100 border-b-4 border-[#5c2300] flex flex-col gap-2 z-10">
+            <div class="flex gap-1 bg-white p-1 rounded-xl border-2 border-[#5c2300]">
+                <button id="btn-mode-easy" onclick="setMode('easy')" class="flex-1 py-1 rounded-lg text-[11px] font-black text-slate-700">EASY 🐣</button>
+                <button id="btn-mode-normal" onclick="setMode('normal')" class="flex-1 py-1 rounded-lg text-[11px] font-black text-slate-700">NORMAL ⚡</button>
+                <button id="btn-mode-hard" onclick="setMode('hard')" class="flex-1 py-1 rounded-lg text-[11px] font-black text-slate-700">HARD 👴</button>
             </div>
 
-            <div id="character-list" class="flex gap-2 overflow-x-auto pb-1">
-                <!-- Rendered dynamically -->
-            </div>
+            <div id="character-list" class="flex gap-2 overflow-x-auto pb-1"></div>
+        </div>
+
+        <!-- API Key Input -->
+        <div id="api-bar" class="bg-amber-200 px-3 py-1.5 border-b-2 border-[#5c2300] flex items-center justify-between gap-2">
+            <span class="text-[10px] font-extrabold text-black">🔑 OpenRouter Key:</span>
+            <input type="password" id="in-chat-api-key" placeholder="Paste API Key..." class="flex-1 bg-white px-2 py-0.5 rounded-lg border-2 border-[#5c2300] text-xs font-bold text-black focus:outline-none">
         </div>
 
         <!-- Chat Feed -->
-        <div id="chat-box" class="flex-1 p-4 overflow-y-auto space-y-3 chat-bg">
+        <div id="chat-box" class="flex-1 p-4 overflow-y-auto space-y-3 chat-bg relative">
             <!-- Messages render here -->
         </div>
 
+        <!-- Guided Tutorial Overlay Tooltip -->
+        <div id="tutorial-tooltip" class="hidden absolute bottom-20 left-4 right-4 bg-orange-500 text-white p-3 rounded-2xl border-4 border-[#5c2300] font-extrabold text-xs text-center shadow-lg z-30 animate-bounce">
+            <span id="tutorial-text">Welcome to Tutorial!</span>
+        </div>
+
         <!-- Typing Indicator -->
-        <div id="typing" class="hidden px-4 py-1 text-xs text-emerald-400 italic chat-bg flex items-center gap-2">
-            <span class="animate-pulse">typing...</span>
+        <div id="typing" class="hidden px-4 py-1 text-xs text-purple-900 font-extrabold italic chat-bg flex items-center gap-2">
+            <span>Thinking... 🤔</span>
         </div>
 
         <!-- Inputs -->
-        <div class="p-3 bg-gray-900 border-t border-gray-800 flex gap-2 items-center">
-            <input type="text" id="user-input" placeholder="Type an empathetic response..." class="flex-1 bg-gray-800 text-sm text-white px-3 py-2.5 rounded-xl border border-gray-700 focus:outline-none focus:border-emerald-500" onkeypress="if(event.key === 'Enter') sendMsg()">
-            <button onclick="sendMsg()" id="send-btn" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm px-4 py-2.5 rounded-xl font-bold transition">
-                Send
+        <div class="p-3 bg-amber-300 border-t-4 border-[#5c2300] flex gap-2 items-center">
+            <input type="text" id="user-input" placeholder="Type something nice..." class="flex-1 bg-white text-sm text-black font-bold px-3 py-2.5 rounded-2xl border-2 border-[#5c2300] focus:outline-none" onkeypress="if(event.key === 'Enter') sendMsg()">
+            <button onclick="sendMsg()" id="send-btn" class="btn-cartoon-green px-4 py-2.5 text-sm font-black uppercase">
+                SEND
             </button>
         </div>
 
         <!-- PAUSE MODAL -->
-        <div id="pause-modal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-40">
-            <h2 class="text-2xl font-bold text-white mb-4">GAME PAUSED</h2>
+        <div id="pause-modal" class="hidden absolute inset-0 bg-black/80 border-4 border-[#5c2300] flex flex-col items-center justify-center p-6 text-center z-40">
+            <h2 class="text-3xl font-black text-amber-300 mb-4 title-cartoon">PAUSED</h2>
             <div class="w-full max-w-xs space-y-3">
-                <button onclick="resumeGame()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Resume</button>
-                <button onclick="returnToMenu()" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-xs uppercase tracking-wider rounded-xl border border-gray-700 transition">Quit to Menu</button>
+                <button onclick="resumeGame()" class="btn-cartoon-green w-full py-3 font-extrabold text-sm">RESUME</button>
+                <button onclick="returnToMenu()" class="btn-cartoon-red w-full py-3 font-extrabold text-sm">QUIT TO MENU</button>
             </div>
         </div>
 
         <!-- GAME OVER / WIN MODAL -->
-        <div id="modal-screen" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-50">
-            <div id="modal-icon" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4"></div>
-            <h2 id="modal-title" class="text-2xl font-extrabold tracking-wider mb-2">TITLE</h2>
-            <p id="modal-desc" class="text-xs text-gray-300 mb-6 max-w-xs leading-relaxed">Description text...</p>
-            <button id="modal-action-btn" onclick="restartOrNext()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-lg">
-                Continue
+        <div id="modal-screen" class="hidden absolute inset-0 bg-amber-300/95 border-8 border-[#5c2300] flex flex-col items-center justify-center p-6 text-center z-50">
+            <div id="modal-icon" class="text-6xl mb-2">🎉</div>
+            <h2 id="modal-title" class="text-3xl font-black mb-2 text-black title-cartoon">TITLE</h2>
+            <p id="modal-desc" class="text-sm font-bold text-black mb-6 max-w-xs">Description text...</p>
+            <button id="modal-action-btn" onclick="restartOrNext()" class="btn-cartoon-green px-6 py-3 font-black text-sm">
+                CONTINUE
             </button>
         </div>
 
     </div>
 
     <script>
-        // Web Audio Synthesizer
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        let ambientOsc = null;
-        let ambientGain = null;
-
-        function startAmbientSound() {
-            if (ambientOsc) return;
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            ambientOsc = audioCtx.createOscillator();
-            ambientGain = audioCtx.createGain();
-            
-            ambientOsc.type = 'sine';
-            ambientOsc.frequency.setValueAtTime(60, audioCtx.currentTime);
-            ambientGain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-
-            ambientOsc.connect(ambientGain);
-            ambientGain.connect(audioCtx.destination);
-            ambientOsc.start();
-        }
 
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -163,219 +220,201 @@
             gain.connect(audioCtx.destination);
 
             if (type === 'send') {
-                osc.frequency.setValueAtTime(350, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.08);
-            } else if (type === 'receive') {
-                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.12);
-                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.12);
-            } else if (type === 'lose') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(250, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.7);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.7);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.7);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             } else if (type === 'win') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.4);
                 gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
             }
         }
 
-        // Personas with Age mechanics
         const gameData = {
             easy: [
                 {
                     id: "ali",
                     name: "Ali (20)",
-                    age: 20,
-                    gender: "male",
                     distress: 60,
-                    anger: 10,
-                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ali&eyebrows=sadConcerned&mouth=sad",
-                    struggle: "Failed Exams",
-                    prompt: "You are Ali, 20. You failed your exams. Speak briefly (1-2 sentences). You listen well to gentle words.",
-                    initial: "I ruined everything... I failed my exams and I can't face my family."
-                },
-                {
-                    id: "sara",
-                    name: "Sara (22)",
-                    age: 22,
-                    gender: "female",
-                    distress: 65,
-                    anger: 15,
-                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sara&eyebrows=sadConcerned&mouth=sad",
-                    struggle: "Breakup Distress",
-                    prompt: "You are Sara, 22. Heartbroken after a sudden breakup. Speak briefly (1-2 sentences). Respond well to comfort.",
-                    initial: "He just left without saying a word. I feel so empty right now."
+                    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Ali",
+                    prompt: "You are Ali, 20. You failed your exams. Speak briefly in funny dramatic 1-2 sentences.",
+                    initial: "I failed my exams... my life is cooked bro! 😭"
                 }
             ],
             normal: [
                 {
                     id: "zain",
                     name: "Zain (25)",
-                    age: 25,
-                    gender: "male",
                     distress: 80,
-                    anger: 30,
-                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Zain&eyebrows=sadConcerned&mouth=sad",
-                    struggle: "Job Loss & Debt",
-                    prompt: "You are Zain, 25. Unexpectedly fired and drowning in debt. Speak in short, hopeless sentences.",
-                    initial: "Got fired this morning. I'm sitting in my car with nowhere to go..."
-                },
-                {
-                    id: "hira",
-                    name: "Hira (21)",
-                    age: 21,
-                    gender: "female",
-                    distress: 85,
-                    anger: 20,
-                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hira&eyebrows=sadConcerned&mouth=sad",
-                    struggle: "Family Isolation",
-                    prompt: "You are Hira, 21. Facing severe family isolation. Speak softly, guardedly, in 1-2 sentences.",
-                    initial: "Nobody in this house cares if I exist or disappear tonight."
+                    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Zain",
+                    prompt: "You are Zain, 25. Got fired. Reply in short dramatic texts.",
+                    initial: "Boss fired me today. Now I've got 0 rupees! 💸"
                 }
             ],
             hard: [
                 {
                     id: "rashid",
                     name: "Uncle Rashid (56)",
-                    age: 56,
-                    gender: "male",
-                    distress: 90,
-                    anger: 60,
-                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rashid&eyebrows=angry&mouth=sad",
-                    struggle: "Pension Scammed",
-                    prompt: "You are Rashid, 56. Lost your life savings to a scam. You get angry easily if young people give generic advice. However, respectful light jokes or warm humor calm your anger without making you lose. Reply in 1-2 irritable sentences.",
-                    initial: "Don't preach to me kid! I lost my entire life savings today. Nobody understands!"
-                },
-                {
-                    id: "parveen",
-                    name: "Parveen (52)",
-                    age: 52,
-                    gender: "female",
                     distress: 95,
-                    anger: 65,
-                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Parveen&eyebrows=angry&mouth=sad",
-                    struggle: "Empty Nest & Illness",
-                    prompt: "You are Parveen, 52. Feeling abandoned and sick. Easily irritated by cliché advice, but soft lighthearted humor softens you up. Reply in 1-2 sharp sentences.",
-                    initial: "Everyone is too busy for me. Don't bother sending me empty platitudes."
+                    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Rashid",
+                    prompt: "You are Rashid, 56. Lost pension to a scammer. Speak angrily.",
+                    initial: "Don't preach to me kid! I got scammed on WhatsApp! 😤"
                 }
             ]
         };
 
-        const negativeKeywords = ["die", "suicide", "kill yourself", "worthless", "hate you", "end it", "nobody cares", "useless", "failure", "go away"];
-        const jokeKeywords = ["haha", "lol", "smile", "joke", "funny", "tea", "coffee", "relax", "chill"];
-
-        let currentMode = 'easy';
         let currentPersona = null;
         let currentDistress = 80;
-        let currentAnger = 20;
         let chatHistory = [];
         let isGameOver = false;
-        let apiKey = "";
+        let isTutorialMode = false;
 
-        // Timer Variables
-        let timerSeconds = 300; // 5 minutes
+        let timerSeconds = 300;
         let timerInterval = null;
-        let timerStarted = false;
 
         function getCurrentTime() {
             return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
         function startGameFromMenu() {
-            const keyInput = document.getElementById('menu-api-key').value.trim();
-            if (!keyInput) {
-                alert("Please enter your OpenRouter API Key to play.");
-                return;
-            }
-            apiKey = keyInput;
-            startAmbientSound();
-
+            isTutorialMode = false;
             document.getElementById('main-menu').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-
+            document.getElementById('mode-bar').classList.remove('hidden');
+            document.getElementById('api-bar').classList.remove('hidden');
             setMode('easy');
         }
 
-        function startTimer() {
-            if (timerStarted) return;
-            timerStarted = true;
-            timerInterval = setInterval(() => {
-                if (timerSeconds <= 0) {
-                    clearInterval(timerInterval);
-                    triggerTimeOutLoss();
-                    return;
-                }
-                timerSeconds--;
-                updateTimerDisplay();
-            }, 1000);
-        }
+        /* ---------------- TUTORIAL MODE (20 SECONDS AUTO DEMO) ---------------- */
+        function startTutorial() {
+            isTutorialMode = true;
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('mode-bar').classList.add('hidden');
+            document.getElementById('api-bar').classList.add('hidden');
 
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timerSeconds = 300;
-            timerStarted = false;
-            updateTimerDisplay();
-        }
+            const tutorialPersona = {
+                name: "Demo Guy (5% Sad)",
+                distress: 5,
+                avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=DemoGuy",
+                initial: "I'm feeling a little bit sad today..."
+            };
 
-        function updateTimerDisplay() {
-            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-            const secs = (timerSeconds % 60).toString().padStart(2, '0');
-            const display = document.getElementById('timer-display');
-            display.innerText = `${mins}:${secs}`;
-            if (timerSeconds <= 60) {
-                display.className = "text-xs font-extrabold text-red-500 animate-pulse bg-gray-950 px-2 py-0.5 rounded border border-red-800 font-mono";
-            } else {
-                display.className = "text-xs font-extrabold text-amber-400 bg-gray-950 px-2 py-0.5 rounded border border-gray-800 font-mono";
-            }
-        }
+            selectPersona(tutorialPersona);
+            currentDistress = 5;
+            updateMetersUI();
 
-        function pauseGame() {
-            if (isGameOver) return;
-            clearInterval(timerInterval);
-            document.getElementById('pause-modal').classList.remove('hidden');
-        }
+            const tooltip = document.getElementById('tutorial-tooltip');
+            const tooltipText = document.getElementById('tutorial-text');
+            const inputField = document.getElementById('user-input');
+            const timerBox = document.getElementById('timer-box');
 
-        function resumeGame() {
-            document.getElementById('pause-modal').classList.add('hidden');
-            if (timerStarted && timerSeconds > 0) {
-                timerInterval = setInterval(() => {
-                    if (timerSeconds <= 0) {
-                        clearInterval(timerInterval);
-                        triggerTimeOutLoss();
-                        return;
+            tooltip.classList.remove('hidden');
+
+            // Step 1: Explain Timer
+            tooltipText.innerText = "📌 STEP 1: Look at the top! You have 5 Minutes to make him happy!";
+            timerBox.classList.add('tutorial-highlight');
+
+            setTimeout(() => {
+                timerBox.classList.remove('tutorial-highlight');
+                // Step 2: Auto Type Text
+                tooltipText.innerText = "💬 STEP 2: Write nice words to decrease his Sadness Bar!";
+                
+                const sampleText = "Hey bro, keep your head up! Everything will be fine 😊";
+                let idx = 0;
+                inputField.value = "";
+
+                const typeInterval = setInterval(() => {
+                    inputField.value += sampleText[idx];
+                    idx++;
+                    if (idx >= sampleText.length) {
+                        clearInterval(typeInterval);
+                        
+                        // Step 3: Auto Send
+                        setTimeout(() => {
+                            tooltipText.innerText = "🚀 STEP 3: Hitting Send reduces his sadness level!";
+                            renderMessage(inputField.value, 'user', getCurrentTime());
+                            playSound('send');
+                            inputField.value = "";
+
+                            setTimeout(() => {
+                                currentDistress = 0;
+                                updateMetersUI();
+                                renderMessage("Thank you so much! You made my day! ❤️", 'persona', getCurrentTime());
+                                playSound('win');
+
+                                setTimeout(() => {
+                                    tooltip.classList.add('hidden');
+                                    triggerWin("Tutorial Complete! Now you know how to play! 🚀");
+                                }, 2000);
+                            }, 1000);
+
+                        }, 1200);
                     }
-                    timerSeconds--;
-                    updateTimerDisplay();
-                }, 1000);
-            }
-        }
+                }, 50);
 
-        function returnToMenu() {
-            clearInterval(timerInterval);
-            document.getElementById('pause-modal').classList.add('hidden');
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('main-menu').classList.remove('hidden');
+            }, 4000);
         }
 
         function setMode(mode) {
-            currentMode = mode;
-
             ['easy', 'normal', 'hard'].forEach(m => {
                 const btn = document.getElementById(`btn-mode-${m}`);
                 if (m === mode) {
-                    btn.className = "flex-1 py-1 rounded-md text-[11px] font-bold transition bg-emerald-600 text-white shadow";
+                    btn.className = "flex-1 py-1 rounded-lg text-[11px] font-black bg-amber-400 text-black border-2 border-[#5c2300]";
                 } else {
-                    btn.className = "flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400 hover:text-white";
-             
+                    btn.className = "flex-1 py-1 rounded-lg text-[11px] font-black text-slate-700 hover:bg-white";
+                }
+            });
+
+            const container = document.getElementById('character-list');
+            container.innerHTML = '';
+
+            gameData[mode].forEach((p) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => selectPersona(p);
+                btn.className = "flex-1 py-1.5 px-3 bg-white hover:bg-yellow-200 rounded-xl text-xs font-black border-2 border-[#5c2300] whitespace-nowrap";
+                btn.innerText = p.name;
+                container.appendChild(btn);
+            });
+
+            selectPersona(gameData[mode][0]);
+        }
+
+        function selectPersona(persona) {
+            currentPersona = persona;
+            currentDistress = persona.distress;
+            isGameOver = false;
+
+            document.getElementById('persona-name').innerText = persona.name;
+            document.getElementById('header-avatar').src = persona.avatar;
+            document.getElementById('modal-screen').classList.add('hidden');
+
+            updateMetersUI();
+
+            chatHistory = [
+                { role: "system", content: `${persona.prompt}` },
+                { role: "assistant", content: persona.initial }
+            ];
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = '';
+            renderMessage(persona.initial, 'persona', getCurrentTime());
+        }
+
+        function updateMetersUI() {
+            document.getElementById('distress-bar').style.width = `${currentDistress}%`;
+        }
+
+        function renderMessage(text, sender, time) {
+            const chatBox = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const msg = document.createElement('div');
+            msg.className = `max-w-[80%] rounded-2xl px-3.5 py-2 text-xs font-bold shadow-md ${sender === 'user' ? 'bubble-user rounded-br-none' : '
