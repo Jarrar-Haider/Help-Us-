@@ -1,53 +1,549 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Crisis Support Simulator</title><style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}body{background:#080b12;color:#fff;min-height:100vh;overflow:hidden}button{border:0;cursor:pointer}.screen{display:none;min-height:100vh}.screen.active{display:flex}
-#menu{align-items:center;justify-content:center;text-align:center;padding:25px;background:radial-gradient(circle at 50% 20%,#18233d,#080b12 60%)}.menu-box{width:min(650px,100%);animation:fade .7s ease}.logo{font-size:clamp(45px,10vw,80px);font-weight:900;letter-spacing:-4px}.subtitle{color:#9da8bd;margin:10px 0 35px;letter-spacing:3px}.menu-btn{display:block;width:min(360px,100%);margin:10px auto;padding:15px;border-radius:11px;background:#151c2d;color:#fff;font-size:16px;transition:.2s}.menu-btn:hover{transform:translateY(-2px);background:#25314b}.menu-btn.primary{background:#536dfe}.menu-btn.primary:hover{background:#4058e8}
-#characters{flex-direction:column;padding:20px;overflow-y:auto}.topbar{width:100%;max-width:1100px;margin:0 auto 20px;display:flex;align-items:center;justify-content:space-between}.back-btn{background:#151c2d;color:#fff;padding:10px 16px;border-radius:8px}.character-grid{width:100%;max-width:1100px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:15px}.character{background:#111725;border:1px solid #202a40;border-radius:17px;padding:17px;cursor:pointer;transition:.2s}.character:hover{transform:translateY(-4px);border-color:#536dfe}.char-head{display:flex;align-items:center;gap:12px}.avatar{width:58px;height:58px;border-radius:50%;background:#202a40}.char-name{font-size:19px;font-weight:bold}.char-age{font-size:12px;color:#7f8ba3;margin-top:3px}.difficulty{display:inline-block;margin:13px 0 9px;padding:5px 8px;background:#202a40;border-radius:6px;font-size:10px;font-weight:bold}.scenario{font-size:13px;line-height:1.5;color:#aeb7c9}.meter{height:7px;background:#252c3b;border-radius:20px;overflow:hidden;margin-top:14px}.meter-fill{height:100%;background:#ef5350;border-radius:20px}
-#game{flex-direction:column;background:#090d15}.game-header{height:70px;flex-shrink:0;background:#101624;border-bottom:1px solid #20283a;display:flex;align-items:center;justify-content:space-between;padding:8px 15px}.player-info{display:flex;align-items:center;gap:10px;min-width:0}.small-avatar{width:44px;height:44px;border-radius:50%}.player-name{font-weight:bold}.player-status{font-size:11px;color:#718097;margin-top:2px}.game-actions{display:flex;align-items:center;gap:7px}.timer{font-weight:bold;font-size:16px;min-width:45px;text-align:center}.action-btn{background:#1a2233;color:#fff;padding:9px 11px;border-radius:8px;font-size:12px}.action-btn:hover{background:#2a354d}.game-main{width:100%;max-width:900px;margin:auto;display:flex;flex-direction:column;height:calc(100vh - 70px);min-height:0}.stats{padding:10px 15px;background:#0e1420}.stats-row{display:flex;justify-content:space-between;font-size:11px;color:#8792a8;margin-bottom:6px}.chat{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:11px}.message{max-width:80%;padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.45;animation:message .2s ease}.message.ai{align-self:flex-start;background:#182133;border-bottom-left-radius:4px}.message.user{align-self:flex-end;background:#536dfe;border-bottom-right-radius:4px}.message-time{font-size:9px;opacity:.55;text-align:right;margin-top:4px}.typing{display:none;align-self:flex-start;gap:4px;background:#182133;padding:12px 14px;border-radius:16px}.typing.show{display:flex}.dot{width:6px;height:6px;border-radius:50%;background:#9da8bd;animation:bounce 1.1s infinite}.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}.api-box{padding:8px 12px;background:#0c111b}.api-box input{width:100%;padding:9px;border-radius:8px;border:1px solid #273149;background:#151c29;color:#fff;outline:none;font-size:11px}.composer{display:flex;gap:7px;padding:10px;background:#101624;border-top:1px solid #20283a}.composer input{flex:1;min-width:0;padding:12px;border-radius:10px;border:1px solid #29344a;background:#171f2f;color:#fff;outline:none}.send{background:#536dfe;color:#fff;padding:0 18px;border-radius:10px}.send:hover{background:#4058e8}
-.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(7px);z-index:50}.overlay.show{display:flex}.pause-box,.result-box{width:min(430px,90%);padding:30px;border-radius:18px;background:#111725;border:1px solid #28344d;text-align:center}.pause-box h2,.result-box h2{margin-bottom:15px}.pause-box p,.result-box p{color:#9da8bd;line-height:1.5;margin-bottom:18px}.result-score{font-size:45px;font-weight:bold;margin:15px}.info-screen{align-items:center;justify-content:center;padding:25px}.info-box{width:min(700px,100%);line-height:1.7}.info-box h1{margin-bottom:20px}.info-box p{color:#aeb7c9;margin-bottom:15px}@keyframes fade{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}@keyframes message{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}@media(max-width:600px){.game-header{height:65px}.game-main{height:calc(100vh - 65px)}.game-actions{gap:4px}.action-btn{padding:8px 7px;font-size:10px}.timer{font-size:13px;min-width:38px}.message{max-width:88%}.player-name{font-size:14px}}
-</style></head><body>
-<section id="menu" class="screen active"><div class="menu-box"><div class="logo">CRISIS</div><div class="subtitle">SUPPORT SIMULATOR</div><button class="menu-btn primary" onclick="openCharacters()">PLAY</button><button class="menu-btn" onclick="showScreen('tutorial')">TUTORIAL</button><button class="menu-btn" onclick="showScreen('credits')">CREDITS</button></div></section>
-<section id="characters" class="screen"><div class="topbar"><h2>Choose Someone</h2><button class="back-btn" onclick="showScreen('menu')">BACK</button></div><div id="characterGrid" class="character-grid"></div></section>
-<section id="game" class="screen"><div class="game-header"><div class="player-info"><img id="gameAvatar" class="small-avatar"><div><div id="gameName" class="player-name"></div><div class="player-status">online</div></div></div><div class="game-actions"><div id="timer" class="timer">05:00</div><button id="musicBtn" class="action-btn" onclick="toggleMusic()">🔊</button><button class="action-btn" onclick="pauseGame()">PAUSE</button></div></div><div class="game-main"><div class="stats"><div class="stats-row"><span>Emotional distress</span><span id="sadnessText">0%</span></div><div class="meter"><div id="sadnessBar" class="meter-fill" style="width:0%"></div></div></div><div id="chat" class="chat"><div id="typing" class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div><div class="api-box"><input id="apiKey" type="password" placeholder="OpenRouter API key"></div><div class="composer"><input id="messageInput" placeholder="Type your response..." autocomplete="off"><button class="send" onclick="sendMessage()">SEND</button></div></div></section>
-<section id="tutorial" class="screen info-screen"><div class="info-box"><h1>Tutorial</h1><p>Listen carefully and respond with empathy.</p><p>Avoid judging, dismissing, insulting or telling someone to simply get over their problems.</p><p>When someone may be in immediate danger, encourage them to contact emergency services, a trusted person or another real-world source of immediate support.</p><p>Every scenario has a five-minute timer.</p><button class="menu-btn primary" onclick="showScreen('menu')">BACK</button></div></section>
-<section id="credits" class="screen info-screen"><div class="info-box"><h1>Credits</h1><p>Crisis Support Simulator</p><p>Interactive crisis-support training simulation.</p><p>AI responses are generated through OpenRouter.</p><button class="menu-btn primary" onclick="showScreen('menu')">BACK</button></div></section>
-<div id="pauseOverlay" class="overlay"><div class="pause-box"><h2>GAME PAUSED</h2><p>The timer and gameplay are paused.</p><button class="menu-btn primary" onclick="resumeGame()">RESUME</button><button class="menu-btn" onclick="quitGame()">QUIT</button></div></div>
-<div id="resultOverlay" class="overlay"><div class="result-box"><h2 id="resultTitle">Scenario Complete</h2><div id="resultScore" class="result-score">0%</div><p id="resultText"></p><button class="menu-btn primary" onclick="closeResult();openCharacters()">ANOTHER CHARACTER</button><button class="menu-btn" onclick="closeResult();showScreen('menu')">MAIN MENU</button></div></div>
-<audio id="bgMusic" loop preload="auto"><source src="https://cdn.pixabay.com/audio/2022/03/15/audio_7e2b6d6b0d.mp3" type="audio/mpeg"></audio>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Crisis Support Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--ink:#17151d;--paper:#fff9ec;--yellow:#ffd84d;--pink:#ff7198;
+--blue:#69d5ff;--green:#7de5a1;--purple:#a98cff;--cream:#ffecc8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:var(--paper);color:var(--ink);font-family:Nunito,sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.screen{
+display:none;width:100%;min-height:100dvh;padding:22px;
+overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.screen.active{display:flex}
+#menu{align-items:center;justify-content:center}
+.panel{
+width:min(560px,100%);margin:auto;background:white;border:4px solid var(--ink);
+border-radius:30px;padding:26px;box-shadow:10px 10px 0 var(--ink);
+}
+.logo{text-align:center;margin-bottom:25px}
+.logo h1{
+font-family:"Baloo 2";font-size:clamp(42px,12vw,72px);line-height:.8;
+margin:0;font-weight:800;letter-spacing:-2px;
+text-shadow:4px 4px 0 var(--yellow),6px 6px 0 var(--ink);
+}
+.logo p{font-family:"Baloo 2";font-size:25px;margin:18px 0 0;font-weight:800}
+.made{font-size:14px;font-weight:800;margin-top:3px;opacity:.65}
+.menu-buttons{display:grid;gap:14px}
+.btn{
+border:4px solid var(--ink);border-radius:18px;padding:15px 20px;
+font-family:"Baloo 2";font-size:22px;font-weight:800;
+background:var(--yellow);box-shadow:5px 5px 0 var(--ink);
+transition:.12s;min-height:58px;
+}
+.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
+.btn.blue{background:var(--blue)}
+.btn.pink{background:var(--pink)}
+.btn.green{background:var(--green)}
+.btn.purple{background:var(--purple)}
+.header{
+width:min(900px,100%);margin:0 auto 18px;display:flex;align-items:center;
+justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5;
+background:var(--paper);padding:4px 0 12px;
+}
+.header h2{font-family:"Baloo 2";font-size:34px;margin:0}
+.back{padding:9px 15px;font-size:17px;min-height:auto}
+.character-list{width:min(900px,100%);margin:auto;display:grid;gap:18px;padding-bottom:30px}
+.char{
+background:white;border:4px solid var(--ink);border-radius:25px;padding:17px;
+box-shadow:7px 7px 0 var(--ink);display:flex;gap:15px;align-items:center;
+}
+.avatar{
+width:82px;height:82px;min-width:82px;border:4px solid var(--ink);
+border-radius:20px;overflow:hidden;background:var(--blue);
+}
+.avatar img{width:100%;height:100%;display:block}
+.char-info{flex:1;min-width:0}
+.char-info h3{font-family:"Baloo 2";font-size:26px;margin:0 0 2px}
+.char-info p{margin:2px 0 8px;font-size:14px;line-height:1.35}
+.badge{
+display:inline-block;border:2px solid var(--ink);border-radius:10px;
+padding:3px 8px;font-size:11px;font-weight:900;background:var(--green);
+}
+.badge.normal{background:var(--yellow)}
+.badge.hard{background:var(--pink)}
+.badge.extreme{background:var(--purple)}
+.support{font-size:16px;padding:10px 13px;min-height:auto}
+.info-box{
+width:min(800px,100%);margin:auto;background:white;border:4px solid var(--ink);
+border-radius:25px;padding:24px;box-shadow:8px 8px 0 var(--ink);line-height:1.55;
+}
+.info-box h2{font-family:"Baloo 2";font-size:34px;margin-top:0}
+.info-box h3{font-family:"Baloo 2";font-size:23px;margin-bottom:5px}
+.info-box li{margin:8px 0}
+#game{
+padding:0;display:none;height:100dvh;min-height:0;overflow:hidden;
+flex-direction:column;
+}
+#game.active{display:flex}
+.gamebar{
+flex:0 0 auto;background:white;border-bottom:4px solid var(--ink);
+padding:9px 12px;display:flex;align-items:center;gap:8px;
+box-shadow:0 3px 0 rgba(0,0,0,.08);z-index:5;
+}
+.game-title{flex:1;min-width:0}
+.game-title strong{display:block;font-family:"Baloo 2";font-size:21px;line-height:1}
+.game-title span{font-size:11px;font-weight:800}
+.game-actions{display:flex;gap:5px}
+.smallbtn{
+border:3px solid var(--ink);border-radius:12px;background:var(--yellow);
+padding:7px 9px;font-size:11px;font-weight:900;box-shadow:2px 2px 0 var(--ink);
+}
+#distressWrap{flex:0 0 auto;background:white;padding:7px 12px;border-bottom:3px solid var(--ink)}
+.distress-top{display:flex;justify-content:space-between;font-size:11px;font-weight:900;margin-bottom:4px}
+.bar{height:12px;border:3px solid var(--ink);border-radius:10px;overflow:hidden;background:#eee}
+#distressBar{height:100%;width:58%;background:var(--pink);transition:.3s}
+.chat{
+flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
+-webkit-overflow-scrolling:touch;padding:15px 12px 10px;
+background:#fff4da;
+}
+.message-row{display:flex;margin:8px 0}
+.message-row.ai{justify-content:flex-start}
+.message-row.user{justify-content:flex-end}
+.bubble{
+max-width:min(82%,570px);padding:11px 13px;border:3px solid var(--ink);
+border-radius:18px;line-height:1.4;font-size:15px;box-shadow:3px 3px 0 rgba(23,21,29,.35);
+}
+.ai .bubble{background:white;border-top-left-radius:5px}
+.user .bubble{background:var(--blue);border-top-right-radius:5px}
+.meta{font-size:10px;font-weight:800;margin-top:5px;opacity:.65}
+.user .meta{text-align:right}
+.composer{
+flex:0 0 auto;background:white;border-top:4px solid var(--ink);
+padding:9px 10px calc(9px + env(safe-area-inset-bottom));
+}
+.keyrow{display:flex;gap:6px;margin-bottom:7px}
+.keyrow input{
+flex:1;min-width:0;border:3px solid var(--ink);border-radius:11px;padding:8px;
+outline:none;background:#fffdf7;font-size:12px;
+}
+.keyrow button{border:3px solid var(--ink);border-radius:11px;background:var(--green);font-size:11px;font-weight:900;padding:7px 10px}
+.sendrow{display:flex;gap:7px;align-items:flex-end}
+#message{
+flex:1;resize:none;min-height:43px;max-height:110px;
+border:3px solid var(--ink);border-radius:14px;padding:10px;outline:none;
+background:#fffdf7;font-size:14px;
+}
+#sendBtn{border:3px solid var(--ink);border-radius:14px;background:var(--yellow);font-weight:900;padding:11px 14px;box-shadow:3px 3px 0 var(--ink)}
+#sendBtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.overlay{
+position:fixed;inset:0;background:rgba(23,21,29,.55);display:none;
+align-items:center;justify-content:center;padding:20px;z-index:20;
+}
+.overlay.show{display:flex}
+.modal{
+width:min(430px,100%);background:white;border:4px solid var(--ink);
+border-radius:25px;padding:25px;text-align:center;box-shadow:9px 9px 0 var(--ink);
+}
+.modal h2{font-family:"Baloo 2";font-size:35px;margin:0 0 8px}
+.modal p{line-height:1.5}
+@media(max-width:600px){
+.screen{padding:15px}
+.panel{padding:21px;border-radius:24px}
+.char{align-items:flex-start;padding:13px}
+.avatar{width:66px;height:66px;min-width:66px}
+.char-info h3{font-size:22px}
+.support{align-self:center}
+.game-actions .smallbtn{padding:6px 7px;font-size:10px}
+.bubble{max-width:88%}
+}
+</style>
+</head>
+<body>
+
+<section id="menu" class="screen active">
+<div class="panel">
+<div class="logo">
+<h1>CRISIS<br>SUPPORT</h1>
+<p>Simulator</p>
+<div class="made">Made by Jarrar</div>
+</div>
+<div class="menu-buttons">
+<button class="btn" onclick="showScreen('characters')">PLAY</button>
+<button class="btn blue" onclick="showScreen('tutorial')">TUTORIAL</button>
+<button class="btn pink" onclick="showScreen('credits')">CREDITS</button>
+</div>
+</div>
+</section>
+
+<section id="characters" class="screen">
+<div style="width:min(900px,100%);margin:auto">
+<div class="header">
+<h2>Choose Someone</h2>
+<button class="btn back" onclick="showScreen('menu')">BACK</button>
+</div>
+<div id="characterList" class="character-list"></div>
+</div>
+</section>
+
+<section id="tutorial" class="screen">
+<div class="info-box">
+<button class="btn back" onclick="showScreen('menu')">BACK</button>
+<h2>How To Play</h2>
+<h3>1. Choose a character</h3>
+<p>Characters have different difficulty levels. Each scenario lasts 5 minutes.</p>
+<h3>2. Read carefully</h3>
+<p>Listen to what the person is saying. Your goal is to respond with empathy and support.</p>
+<h3>3. Keep the conversation natural</h3>
+<p>Ask questions, acknowledge feelings and avoid judging or dismissing what they say.</p>
+<h3>4. Watch distress</h3>
+<p>The distress meter changes based on your responses. Supportive responses can reduce distress.</p>
+<h3>5. Emergency situations</h3>
+<p>If the character appears to be in immediate danger, encourage them to stay with someone they trust and seek immediate professional or emergency help.</p>
+<h3>6. API key</h3>
+<p>Enter your OpenRouter API key in the game and press SAVE KEY. It is stored only in this browser's local storage.</p>
+</div>
+</section>
+
+<section id="credits" class="screen">
+<div class="info-box">
+<button class="btn back" onclick="showScreen('menu')">BACK</button>
+<h2>Credits</h2>
+<p><strong>Made by Jarrar</strong></p>
+<p>Game design, UI and concept by Jarrar.</p>
+<p>Crisis Support Simulator is a fictional conversation simulator designed around empathetic communication.</p>
+<p>The AI responses are generated dynamically through OpenRouter.</p>
+</div>
+</section>
+
+<section id="game" class="screen">
+<div class="gamebar">
+<div class="game-title">
+<strong id="gameName">Character</strong>
+<span id="gameDifficulty">EASY</span>
+</div>
+<div class="game-actions">
+<button class="smallbtn" onclick="togglePause()" id="pauseBtn">PAUSE</button>
+<button class="smallbtn" onclick="toggleMusic()" id="musicBtn">MUSIC ON</button>
+<button class="smallbtn" onclick="endGame()">EXIT</button>
+</div>
+</div>
+
+<div id="distressWrap">
+<div class="distress-top"><span>DISTRESS</span><span id="distressText">58%</span></div>
+<div class="bar"><div id="distressBar"></div></div>
+</div>
+
+<div id="chat" class="chat"></div>
+
+<div class="composer">
+<div class="keyrow">
+<input id="apiKey" type="password" placeholder="OpenRouter API key">
+<button onclick="saveKey()">SAVE KEY</button>
+</div>
+<div class="sendrow">
+<textarea id="message" placeholder="Type your response..." rows="1"></textarea>
+<button id="sendBtn" onclick="sendMessage()">SEND</button>
+</div>
+</div>
+</section>
+
+<div id="pauseOverlay" class="overlay">
+<div class="modal">
+<h2>PAUSED</h2>
+<p>The timer and conversation are paused.</p>
+<button class="btn green" onclick="togglePause()">RESUME</button>
+</div>
+</div>
+
 <script>
 const characters=[
-{name:"Ali",age:20,difficulty:"EASY",distress:35,scenario:"Ali failed an important exam and feels like he has disappointed everyone.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Ali",opening:"I don't know what I'm supposed to do anymore. I studied so much and still failed."},
-{name:"Sara",age:22,difficulty:"EASY",distress:40,scenario:"Sara recently lost a close friendship and feels completely alone.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Sara",opening:"She was the person I talked to about everything. Now I don't even know who I can talk to."},
-{name:"Hamza",age:24,difficulty:"NORMAL",distress:55,scenario:"Hamza was fired from his job and believes he has become a burden.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Hamza",opening:"I got fired today. I keep thinking everyone would be better off without me."},
-{name:"Ayesha",age:27,difficulty:"NORMAL",distress:60,scenario:"Ayesha is struggling after a painful relationship breakup.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Ayesha",opening:"I can't stop thinking about what happened. It feels like my whole future disappeared."},
-{name:"Bilal",age:31,difficulty:"HARD",distress:70,scenario:"Bilal is under severe financial pressure and feels trapped.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Bilal",opening:"Bills keep coming and I can't fix anything. I feel completely trapped."},
-{name:"Sana",age:29,difficulty:"HARD",distress:75,scenario:"Sana has been isolated for months and feels overwhelmed.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Sana",opening:"I've been pretending I'm okay for months. Honestly, I'm exhausted."},
-{name:"Rashid",age:56,difficulty:"HARD",distress:85,scenario:"Rashid lost his savings through a scam and believes his life is ruined.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Rashid",opening:"Everything I saved for years is gone. I don't see how I can recover from this."},
-{name:"Imran",age:42,difficulty:"VERY HARD",distress:90,scenario:"Imran has experienced several major losses and feels there is no hope.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Imran",opening:"One thing after another keeps going wrong. I don't think I have anything left."},
-{name:"Daniyal",age:19,difficulty:"EXTREME",distress:95,scenario:"Daniyal is experiencing an acute emotional crisis and needs immediate support.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Daniyal",opening:"I don't think I can keep doing this. Everything hurts and I just want it to stop."},
-{name:"Noor",age:34,difficulty:"VERY HARD",distress:88,scenario:"Noor has been struggling with several problems for months and feels hopeless.",avatar:"https://api.dicebear.com/9.x/adventurer/svg?seed=Noor",opening:"I've tried to keep going for so long. I'm honestly starting to lose hope."}
+{id:1,name:"Ali",age:20,difficulty:"EASY",distress:58,reason:"Failed exams",color:"b6e3f4",opening:"I've been pretending I'm okay for months. Honestly, I'm exhausted and I don't know what to do anymore."},
+{id:2,name:"Zain",age:25,difficulty:"NORMAL",distress:72,reason:"Job and money problems",color:"c0aede",opening:"I got fired last week. I keep thinking everyone would be better off if I just disappeared."},
+{id:3,name:"Sara",age:22,difficulty:"NORMAL",distress:76,reason:"Academic and family pressure",color:"ffd5dc",opening:"Everyone keeps telling me to work harder. I am trying, but I feel like I can't keep carrying all of this."},
+{id:4,name:"Hassan",age:31,difficulty:"HARD",distress:84,reason:"Relationship ended and isolation",color:"d1d4f9",opening:"I stopped answering my friends because I don't want them to see how bad things have gotten."},
+{id:5,name:"Uncle Rashid",age:56,difficulty:"HARD",distress:91,reason:"Lost years of savings",color:"ffe2a9",opening:"I lost money I had saved for years. I feel ashamed, and I honestly don't see much point in going forward."},
+{id:6,name:"Mariam",age:28,difficulty:"EXTREME",distress:96,reason:"Overwhelmed and unsafe alone",color:"c7f9cc",opening:"Everything hit me at once. I'm scared of what might happen if I stay alone tonight."}
 ];
-let current=null,currentIndex=-1,sadness=0,timeLeft=300,timerInterval=null,paused=false,score=0,musicPlaying=false;
-const music=document.getElementById("bgMusic");
 
-function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active")}
-function openCharacters(){renderCharacters();showScreen("characters")}
-function renderCharacters(){const grid=document.getElementById("characterGrid");grid.innerHTML="";characters.forEach((c,index)=>{const card=document.createElement("div");card.className="character";card.onclick=()=>startCharacter(index);card.innerHTML=`<div class="char-head"><img class="avatar" src="${c.avatar}"><div><div class="char-name">${c.name}</div><div class="char-age">${c.age} years old</div></div></div><div class="difficulty">${c.difficulty}</div><div class="scenario">${c.scenario}</div><div class="meter"><div class="meter-fill" style="width:${c.distress}%"></div></div>`;grid.appendChild(card)})}
-function startCharacter(index){currentIndex=index;current=characters[index];sadness=current.distress;timeLeft=300;score=0;paused=false;document.getElementById("gameName").textContent=current.name;document.getElementById("gameAvatar").src=current.avatar;document.getElementById("messageInput").disabled=false;document.querySelector(".send").disabled=false;document.getElementById("chat").innerHTML='<div id="typing" class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';updateSadness();updateTimer();showScreen("game");addMessage(current.opening,"ai");startTimer();startMusic()}
-function addMessage(text,type){const chat=document.getElementById("chat"),message=document.createElement("div"),now=new Date(),time=now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});message.className="message "+type;message.innerHTML=`<div>${escapeHTML(text)}</div><div class="message-time">${time}${type==="user"?" ✓✓ seen":""}</div>`;chat.insertBefore(message,document.getElementById("typing"));chat.scrollTop=chat.scrollHeight}
-function escapeHTML(text){return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
-async function sendMessage(){if(paused||!current)return;const input=document.getElementById("messageInput"),text=input.value.trim();if(!text)return;input.value="";addMessage(text,"user");const supportScore=evaluateSupport(text);score+=supportScore;sadness=Math.max(0,Math.min(100,sadness-supportScore));updateSadness();showTyping(true);const key=document.getElementById("apiKey").value.trim();if(!key){setTimeout(()=>{if(!current)return;showTyping(false);addMessage("I hear you. I don't really know what to say, but I'm glad you're still talking to me.","ai")},900);return}try{const response=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify({model:"openai/gpt-4o-mini",temperature:.45,max_tokens:120,messages:[{role:"system",content:"You are a fictional character in a serious crisis-support training simulation. Character: "+current.name+", age "+current.age+". Situation: "+current.scenario+". Respond naturally as the character. Be serious and emotionally realistic. Never joke or act goofy. Never provide self-harm methods or instructions. Never glorify suicide or self-harm. Do not suddenly become cheerful. Respond directly to what the player says. Keep replies short, usually one to three sentences. If the player shows empathy, gradually become more open. If the player dismisses the situation, react realistically. If immediate danger is relevant, acknowledge that safety and real-world help are important."},{role:"user",content:text}]})});const data=await response.json();showTyping(false);if(!current)return;let reply=data?.choices?.[0]?.message?.content;if(!reply)reply="I hear you. I don't really know what to say, but I'm glad you're still talking to me.";addMessage(reply,"ai")}catch(error){showTyping(false);if(current)addMessage("I don't know how to explain it. I just need someone to stay and listen.","ai")}}
-function evaluateSupport(text){const t=text.toLowerCase();let points=0;["i'm here","im here","i am here","listen","understand","i hear you","you're not alone","you are not alone","take your time","talk to me","tell me","safe","help","support","care","matter","important","stay with me","stay here","trusted person","professional","someone you trust"].forEach(word=>{if(t.includes(word))points+=8});["get over it","stop crying","just do it","nobody cares","not my problem","man up","you're weak","you are weak","kill yourself","do it"].forEach(word=>{if(t.includes(word))points-=15});if(points===0)points=2;return Math.max(-15,Math.min(20,points))}
-function updateSadness(){document.getElementById("sadnessText").textContent=Math.round(sadness)+"%";document.getElementById("sadnessBar").style.width=sadness+"%"}
-function startTimer(){clearInterval(timerInterval);timerInterval=setInterval(()=>{if(paused)return;timeLeft--;updateTimer();if(timeLeft<=0){clearInterval(timerInterval);finishGame()}},1000)}
-function updateTimer(){const minutes=Math.floor(timeLeft/60),seconds=timeLeft%60;document.getElementById("timer").textContent=String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0")}
-function pauseGame(){if(!current)return;paused=true;document.getElementById("pauseOverlay").classList.add("show")}
-function resumeGame(){paused=false;document.getElementById("pauseOverlay").classList.remove("show")}
-function quitGame(){clearInterval(timerInterval);paused=false;current=null;document.getElementById("pauseOverlay").classList.remove("show");openCharacters()}
-function finishGame(){clearInterval(timerInterval);paused=true;document.getElementById("messageInput").disabled=true;document.querySelector(".send").disabled=true;let finalScore=current?Math.round(((current.distress-sadness)/current.distress)*100):0;finalScore=Math.max(0,Math.min(100,finalScore));document.getElementById("resultScore").textContent=finalScore+"%";let title="Scenario Complete",text="You stayed engaged and attempted to provide support.";if(finalScore>=70){title="Strong Support";text="Your responses showed consistent empathy, listening and support."}else if(finalScore>=40){title="Good Attempt";text="You provided some useful support, but there was room for improvement."}else{text="Focus more on empathy, listening, safety and encouraging real-world support."}document.getElementById("resultTitle").textContent=title;document.getElementById("resultText").textContent=text;document.getElementById("resultOverlay").classList.add("show")}
-function closeResult(){document.getElementById("resultOverlay").classList.remove("show")}
-function showTyping(show){const typing=document.getElementById("typing");if(typing)typing.classList.toggle("show",show);document.getElementById("chat").scrollTop=document.getElementById("chat").scrollHeight}
-function startMusic(){if(musicPlaying)return;music.volume=.18;music.play().then(()=>{musicPlaying=true;document.getElementById("musicBtn").textContent="🔊"}).catch(()=>{})}
-function toggleMusic(){if(music.paused){music.volume=.18;music.play().then(()=>{musicPlaying=true;document.getElementById("musicBtn").textContent="🔊"}).catch(()=>{})}else{music.pause();musicPlaying=false;document.getElementById("musicBtn").textContent="🔇"}}
-document.getElementById("messageInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
-renderCharacters();
-</script></body></html>
+let current=null;
+let distress=0;
+let timeLeft=300;
+let timer=null;
+let paused=false;
+let musicStarted=false;
+let musicMuted=false;
+let audioCtx=null;
+let masterGain=null;
+let oscillators=[];
+let history=[];
+
+function showScreen(id){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+if(id!=="game") stopTimer();
+window.scrollTo(0,0);
+}
+
+function renderChars(){
+const list=document.getElementById("characterList");
+list.innerHTML=characters.map(c=>{
+let cls=c.difficulty.toLowerCase();
+let avatar=`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(c.name)}&backgroundColor=${c.color}`;
+return `<div class="char">
+<div class="avatar"><img src="${avatar}" alt=""></div>
+<div class="char-info">
+<h3>${c.name}, ${c.age}</h3>
+<span class="badge ${cls}">${c.difficulty}</span>
+<p>${c.reason}</p>
+</div>
+<button class="btn support" onclick="openInfo(${c.id})">SUPPORT</button>
+</div>`;
+}).join("");
+}
+
+function openInfo(id){
+current=characters.find(c=>c.id===id);
+startGame();
+}
+
+function saveKey(){
+const key=document.getElementById("apiKey").value.trim();
+if(!key)return;
+localStorage.setItem("crisis_openrouter_key",key);
+document.getElementById("apiKey").value=key;
+alert("API key saved locally.");
+}
+
+function loadKey(){
+const key=localStorage.getItem("crisis_openrouter_key")||"";
+document.getElementById("apiKey").value=key;
+}
+
+function nowTime(){
+return new Date().toLocaleTimeString([],{
+hour:"2-digit",minute:"2-digit"
+});
+}
+
+function escapeHtml(text){
+return text.replace(/[&<>"']/g,m=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+}[m]));
+}
+
+function addMsg(role,text){
+const chat=document.getElementById("chat");
+const row=document.createElement("div");
+row.className="message-row "+role;
+const bubble=document.createElement("div");
+bubble.className="bubble";
+let meta=role==="user"?`${nowTime()} · ✓✓`:nowTime();
+bubble.innerHTML=`${escapeHtml(text)}<div class="meta">${meta}</div>`;
+row.appendChild(bubble);
+chat.appendChild(row);
+chat.scrollTop=chat.scrollHeight;
+history.push({role:role==="user"?"user":"assistant",content:text});
+}
+
+function updateSad(){
+distress=Math.max(0,Math.min(100,distress));
+document.getElementById("distressBar").style.width=distress+"%";
+document.getElementById("distressText").textContent=distress+"%";
+}
+
+function startGame(){
+if(!current)return;
+showScreen("game");
+distress=current.distress;
+timeLeft=300;
+paused=false;
+history=[];
+document.getElementById("gameName").textContent=current.name;
+document.getElementById("gameDifficulty").textContent=current.difficulty;
+document.getElementById("chat").innerHTML="";
+document.getElementById("pauseOverlay").classList.remove("show");
+document.getElementById("pauseBtn").textContent="PAUSE";
+updateSad();
+loadKey();
+addMsg("ai",current.opening);
+startTimer();
+startMusic();
+}
+
+function startTimer(){
+stopTimer();
+timer=setInterval(updateTimer,1000);
+}
+
+function stopTimer(){
+if(timer){
+clearInterval(timer);
+timer=null;
+}
+}
+
+function updateTimer(){
+if(paused)return;
+timeLeft--;
+if(timeLeft<=0){
+timeLeft=0;
+stopTimer();
+alert("Scenario complete.");
+endGame();
+}
+}
+
+function togglePause(){
+if(!current)return;
+paused=!paused;
+document.getElementById("pauseOverlay").classList.toggle("show",paused);
+document.getElementById("pauseBtn").textContent=paused?"RESUME":"PAUSE";
+}
+
+function endGame(){
+stopTimer();
+paused=false;
+document.getElementById("pauseOverlay").classList.remove("show");
+showScreen("characters");
+}
+
+function updateDistressFromText(text){
+const lower=text.toLowerCase();
+const supportive=/listen|here for you|care|understand|help|friend|support|talk|safe|not alone|stay with you|i'm here|you matter|thank you for telling me/;
+const danger=/kill myself|suicide|end my life|hurt myself|die tonight|don't want to live|want to die/;
+if(supportive.test(lower))distress-=7;
+else distress-=2;
+if(danger.test(lower))distress-=2;
+updateSad();
+}
+
+async function sendMessage(){
+if(paused)return;
+const input=document.getElementById("message");
+const text=input.value.trim();
+if(!text)return;
+
+const key=document.getElementById("apiKey").value.trim();
+if(!key){
+alert("Enter your OpenRouter API key first.");
+return;
+}
+
+addMsg("user",text);
+input.value="";
+input.style.height="43px";
+updateDistressFromText(text);
+
+const sendBtn=document.getElementById("sendBtn");
+sendBtn.disabled=true;
+sendBtn.textContent="...";
+
+const system=`You are a character in a serious fictional crisis-support simulator.
+Your role is to respond as a realistic human experiencing emotional distress.
+Stay natural, serious and conversational.
+Never joke, use emojis, flirt, act goofy or turn the situation into comedy.
+Do not provide self-harm methods, instructions, locations, dosages or optimization.
+Do not glorify suicide or self-harm.
+React directly to what the player says.
+Allow the conversation to develop naturally.
+If the player is supportive, gradually become more open and receptive.
+If immediate danger is indicated, strongly encourage the character to stay with a trusted person and seek immediate professional or emergency support.
+Keep responses concise, usually 1-4 sentences.`;
+
+try{
+const response=await fetch("https://openrouter.ai/api/v1/chat/completions",{
+method:"POST",
+headers:{
+"Authorization":"Bearer "+key,
+"Content-Type":"application/json",
+"HTTP-Referer":location.href,
+"X-Title":"Crisis Support Simulator"
+},
+body:JSON.stringify({
+model:"openai/gpt-4o-mini",
+messages:[
+{role:"system",content:system},
+{role:"user",content:`Character: ${current.name}. Situation: ${current.reason}. Opening situation: ${current.opening}`},
+...history.slice(-8)
+],
+temperature:.75,
+max_tokens:180
+})
+});
+
+if(!response.ok)throw new Error("API request failed");
+const data=await response.json();
+const reply=data?.choices?.[0]?.message?.content?.trim();
+
+if(reply)addMsg("ai",reply);
+else addMsg("ai","I'm having trouble putting my thoughts into words right now.");
+}catch(error){
+addMsg("ai","I'm having trouble responding right now. Can we slow down for a moment?");
+console.error(error);
+}finally{
+sendBtn.disabled=false;
+sendBtn.textContent="SEND";
+}
+}
+
+document.getElementById("message").addEventListener("keydown",e=>{
+if(e.key==="Enter"&&!e.shiftKey){
+e.preventDefault();
+sendMessage();
+}
+});
+
+document.getElementById("message").addEventListener("input",e=>{
+e.target.style.height="43px";
+e.target.style.height=Math.min(e.target.scrollHeight,110)+"px";
+});
+
+function startMusic(){
+if(musicStarted)return;
+try{
+audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+masterGain=audioCtx.createGain();
+masterGain.gain.value=.12;
+masterGain.connect(audioCtx.destination);
+
+const filter=audioCtx.createBiquadFilter();
+filter.type="lowpass";
+filter.frequency.value=900;
+filter.Q.value=.5;
+filter.connect(masterGain);
+
+const notes=[110,146.83,164.81];
+notes.forEach((freq,i)=>{
+const osc=audioCtx.createOscillator();
+const gain=audioCtx.createGain();
+osc.type=i===0?"sine":"triangle";
+osc.frequency.value=freq;
+gain.gain.value=i===0?.10:.035;
+osc.connect(gain);
+gain.connect(filter);
+osc.start();
+oscillators.push(osc);
+});
+
+musicStarted=true;
+}catch(e){
+console.log("Audio unavailable",e);
+}
+}
+
+function toggleMusic(){
+if(!musicStarted){
+startMusic();
+return;
+}
+musicMuted=!musicMuted;
+masterGain.gain.setTargetAtTime(musicMuted?0:.12,audioCtx.currentTime,.08);
+document.getElementById("musicBtn").textContent=musicMuted?"MUTED":"MUSIC ON";
+}
+
+renderChars();
+loadKey();
+</script>
+</body>
+  </html>
