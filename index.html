@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-md bg-gray-800 rounded-xl shadow-2xl border border-gray-700 flex flex-col h-[650px] overflow-hidden">
+        
+        <!-- Header -->
+        <div class="p-4 bg-gray-950 border-b border-gray-800 flex justify-between items-center">
+            <div>
+                <h1 class="font-bold text-lg text-emerald-400" id="persona-name">Select a Person</h1>
+                <p class="text-xs text-gray-400" id="persona-status">Offline</p>
+            </div>
+            <button onclick="toggleSettings()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700">API Key</button>
+        </div>
+
+        <!-- API Key Input Modal/Dropdown -->
+        <div id="settings-panel" class="hidden p-3 bg-gray-900 border-b border-gray-800">
+            <label class="block text-xs text-gray-400 mb-1">OpenRouter API Key:</label>
+            <input type="password" id="api-key" placeholder="sk-or-v1-..." class="w-full p-2 bg-gray-800 border border-gray-700 rounded text-sm text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <!-- Persona Selection Bar -->
+        <div class="p-2 bg-gray-900 border-b border-gray-800 flex gap-2 overflow-x-auto">
+            <button onclick="selectPersona('ali')" class="px-3 py-1.5 bg-gray-800 hover:bg-emerald-600 rounded-lg text-xs font-medium whitespace-nowrap transition-colors">Ali (Exams)</button>
+            <button onclick="selectPersona('sara')" class="px-3 py-1.5 bg-gray-800 hover:bg-emerald-600 rounded-lg text-xs font-medium whitespace-nowrap transition-colors">Sara (Breakup)</button>
+            <button onclick="selectPersona('zain')" class="px-3 py-1.5 bg-gray-800 hover:bg-emerald-600 rounded-lg text-xs font-medium whitespace-nowrap transition-colors">Zain (Job Loss)</button>
+        </div>
+
+        <!-- Chat Window -->
+        <div id="chat-box" class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-900/50">
+            <div class="text-center text-xs text-gray-500 my-4">Select a persona above to start texting.</div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="typing" class="hidden px-4 py-1 text-xs text-emerald-400 italic bg-gray-900/50">Typing...</div>
+
+        <!-- Input Box -->
+        <div class="p-3 bg-gray-950 border-t border-gray-800 flex gap-2">
+            <input type="text" id="user-input" placeholder="Type your text..." class="flex-1 bg-gray-800 text-sm text-white px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-emerald-500" onkeypress="if(event.key === 'Enter') sendMsg()">
+            <button onclick="sendMsg()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors">Send</button>
+        </div>
+
+    </div>
+
+    <script>
+        const personas = {
+            ali: {
+                name: "Ali (20)",
+                status: "Academic Distress",
+                prompt: "You are Ali, a 20-year-old student who just failed his crucial final exams. You are feeling overwhelmed, hopeless, and isolated. Reply in short text messages (1-2 sentences). Respond naturally to the user: if they show empathy, open up slightly; if they minimize your pain, withdraw or get more upset.",
+                initial: "I ruined everything today. I failed my exams and I can't face anyone."
+            },
+            sara: {
+                name: "Sara (22)",
+                status: "Relationship Crisis",
+                prompt: "You are Sara, a 22-year-old dealing with a sudden, painful breakup after 4 years. You are heartbroken and feeling lost. Reply in short text messages (1-2 sentences). Stay in character and react realistically to the user's texts.",
+                initial: "He walked out today. My head is spinning, I literally can't breathe or see a future anymore."
+            },
+            zain: {
+                name: "Zain (25)",
+                status: "Financial/Career Distress",
+                prompt: "You are Zain, a 25-year-old who was unexpectedly laid off from his job today. You are anxious about the future and feeling like a failure. Reply in short text messages (1-2 sentences). Stay in character and react realistically to the user's texts.",
+                initial: "Got laid off this morning. I've been sitting in my car for hours... I just feel completely done."
+            }
+        };
+
+        let currentPersona = null;
+        let chatHistory = [];
+
+        function toggleSettings() {
+            document.getElementById('settings-panel').classList.toggle('hidden');
+        }
+
+        function selectPersona(key) {
+            currentPersona = personas[key];
+            document.getElementById('persona-name').innerText = currentPersona.name;
+            document.getElementById('persona-status').innerText = currentPersona.status;
+            
+            chatHistory = [
+                { role: "system", content: currentPersona.prompt },
+                { role: "assistant", content: currentPersona.initial }
+            ];
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = '';
+            renderMessage(currentPersona.initial, 'persona');
+        }
+
+        function renderMessage(text, sender) {
+            const chatBox = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const msg = document.createElement('div');
+            msg.className = `max-w-[80%] rounded-xl px-3 py-2 text-sm ${sender === 'user' ? 'bg-emerald-600 text-white' : 'bg-gray-800 text-gray-200 border border-gray-700'}`;
+            msg.innerText = text;
+
+            div.appendChild(msg);
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMsg() {
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            const apiKey = document.getElementById('api-key').value.trim();
+
+            if (!text) return;
+            if (!currentPersona) {
+                alert('Please select a persona first.');
+                return;
+            }
+            if (!apiKey) {
+                alert('Please enter your OpenRouter API key in the top settings panel.');
+                toggleSettings();
+                return;
+            }
+
+            renderMessage(text, 'user');
+            input.value = '';
+            chatHistory.push({ role: "user", content: text });
+
+            document.getElementById('typing').classList.remove('hidden');
+
+            try {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "meta-llama/llama-3.3-70b-instruct",
+                        messages: chatHistory
+                    })
+                });
+
+                const data = await response.json();
+                const reply = data.choices[0].message.content;
+
+                document.getElementById('typing').classList.add('hidden');
+                renderMessage(reply, 'persona');
+                chatHistory.push({ role: "assistant", content: reply });
+
+            } catch (err) {
+                document.getElementById('typing').classList.add('hidden');
+                alert('Error fetching response. Check your API key or connection.');
+            }
+        }
+    </script>
+</body>
+  </html>
+  
