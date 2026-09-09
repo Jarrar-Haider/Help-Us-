@@ -2,548 +2,348 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Crisis Support Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
---ink:#17151d;--paper:#fff9ec;--yellow:#ffd84d;--pink:#ff7198;
---blue:#69d5ff;--green:#7de5a1;--purple:#a98cff;--cream:#ffecc8;
-}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;background:var(--paper);color:var(--ink);font-family:Nunito,sans-serif}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-.screen{
-display:none;width:100%;min-height:100dvh;padding:22px;
-overflow-y:auto;-webkit-overflow-scrolling:touch;
-}
-.screen.active{display:flex}
-#menu{align-items:center;justify-content:center}
-.panel{
-width:min(560px,100%);margin:auto;background:white;border:4px solid var(--ink);
-border-radius:30px;padding:26px;box-shadow:10px 10px 0 var(--ink);
-}
-.logo{text-align:center;margin-bottom:25px}
-.logo h1{
-font-family:"Baloo 2";font-size:clamp(42px,12vw,72px);line-height:.8;
-margin:0;font-weight:800;letter-spacing:-2px;
-text-shadow:4px 4px 0 var(--yellow),6px 6px 0 var(--ink);
-}
-.logo p{font-family:"Baloo 2";font-size:25px;margin:18px 0 0;font-weight:800}
-.made{font-size:14px;font-weight:800;margin-top:3px;opacity:.65}
-.menu-buttons{display:grid;gap:14px}
-.btn{
-border:4px solid var(--ink);border-radius:18px;padding:15px 20px;
-font-family:"Baloo 2";font-size:22px;font-weight:800;
-background:var(--yellow);box-shadow:5px 5px 0 var(--ink);
-transition:.12s;min-height:58px;
-}
-.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
-.btn.blue{background:var(--blue)}
-.btn.pink{background:var(--pink)}
-.btn.green{background:var(--green)}
-.btn.purple{background:var(--purple)}
-.header{
-width:min(900px,100%);margin:0 auto 18px;display:flex;align-items:center;
-justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5;
-background:var(--paper);padding:4px 0 12px;
-}
-.header h2{font-family:"Baloo 2";font-size:34px;margin:0}
-.back{padding:9px 15px;font-size:17px;min-height:auto}
-.character-list{width:min(900px,100%);margin:auto;display:grid;gap:18px;padding-bottom:30px}
-.char{
-background:white;border:4px solid var(--ink);border-radius:25px;padding:17px;
-box-shadow:7px 7px 0 var(--ink);display:flex;gap:15px;align-items:center;
-}
-.avatar{
-width:82px;height:82px;min-width:82px;border:4px solid var(--ink);
-border-radius:20px;overflow:hidden;background:var(--blue);
-}
-.avatar img{width:100%;height:100%;display:block}
-.char-info{flex:1;min-width:0}
-.char-info h3{font-family:"Baloo 2";font-size:26px;margin:0 0 2px}
-.char-info p{margin:2px 0 8px;font-size:14px;line-height:1.35}
-.badge{
-display:inline-block;border:2px solid var(--ink);border-radius:10px;
-padding:3px 8px;font-size:11px;font-weight:900;background:var(--green);
-}
-.badge.normal{background:var(--yellow)}
-.badge.hard{background:var(--pink)}
-.badge.extreme{background:var(--purple)}
-.support{font-size:16px;padding:10px 13px;min-height:auto}
-.info-box{
-width:min(800px,100%);margin:auto;background:white;border:4px solid var(--ink);
-border-radius:25px;padding:24px;box-shadow:8px 8px 0 var(--ink);line-height:1.55;
-}
-.info-box h2{font-family:"Baloo 2";font-size:34px;margin-top:0}
-.info-box h3{font-family:"Baloo 2";font-size:23px;margin-bottom:5px}
-.info-box li{margin:8px 0}
-#game{
-padding:0;display:none;height:100dvh;min-height:0;overflow:hidden;
-flex-direction:column;
-}
-#game.active{display:flex}
-.gamebar{
-flex:0 0 auto;background:white;border-bottom:4px solid var(--ink);
-padding:9px 12px;display:flex;align-items:center;gap:8px;
-box-shadow:0 3px 0 rgba(0,0,0,.08);z-index:5;
-}
-.game-title{flex:1;min-width:0}
-.game-title strong{display:block;font-family:"Baloo 2";font-size:21px;line-height:1}
-.game-title span{font-size:11px;font-weight:800}
-.game-actions{display:flex;gap:5px}
-.smallbtn{
-border:3px solid var(--ink);border-radius:12px;background:var(--yellow);
-padding:7px 9px;font-size:11px;font-weight:900;box-shadow:2px 2px 0 var(--ink);
-}
-#distressWrap{flex:0 0 auto;background:white;padding:7px 12px;border-bottom:3px solid var(--ink)}
-.distress-top{display:flex;justify-content:space-between;font-size:11px;font-weight:900;margin-bottom:4px}
-.bar{height:12px;border:3px solid var(--ink);border-radius:10px;overflow:hidden;background:#eee}
-#distressBar{height:100%;width:58%;background:var(--pink);transition:.3s}
-.chat{
-flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;
--webkit-overflow-scrolling:touch;padding:15px 12px 10px;
-background:#fff4da;
-}
-.message-row{display:flex;margin:8px 0}
-.message-row.ai{justify-content:flex-start}
-.message-row.user{justify-content:flex-end}
-.bubble{
-max-width:min(82%,570px);padding:11px 13px;border:3px solid var(--ink);
-border-radius:18px;line-height:1.4;font-size:15px;box-shadow:3px 3px 0 rgba(23,21,29,.35);
-}
-.ai .bubble{background:white;border-top-left-radius:5px}
-.user .bubble{background:var(--blue);border-top-right-radius:5px}
-.meta{font-size:10px;font-weight:800;margin-top:5px;opacity:.65}
-.user .meta{text-align:right}
-.composer{
-flex:0 0 auto;background:white;border-top:4px solid var(--ink);
-padding:9px 10px calc(9px + env(safe-area-inset-bottom));
-}
-.keyrow{display:flex;gap:6px;margin-bottom:7px}
-.keyrow input{
-flex:1;min-width:0;border:3px solid var(--ink);border-radius:11px;padding:8px;
-outline:none;background:#fffdf7;font-size:12px;
-}
-.keyrow button{border:3px solid var(--ink);border-radius:11px;background:var(--green);font-size:11px;font-weight:900;padding:7px 10px}
-.sendrow{display:flex;gap:7px;align-items:flex-end}
-#message{
-flex:1;resize:none;min-height:43px;max-height:110px;
-border:3px solid var(--ink);border-radius:14px;padding:10px;outline:none;
-background:#fffdf7;font-size:14px;
-}
-#sendBtn{border:3px solid var(--ink);border-radius:14px;background:var(--yellow);font-weight:900;padding:11px 14px;box-shadow:3px 3px 0 var(--ink)}
-#sendBtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-.overlay{
-position:fixed;inset:0;background:rgba(23,21,29,.55);display:none;
-align-items:center;justify-content:center;padding:20px;z-index:20;
-}
-.overlay.show{display:flex}
-.modal{
-width:min(430px,100%);background:white;border:4px solid var(--ink);
-border-radius:25px;padding:25px;text-align:center;box-shadow:9px 9px 0 var(--ink);
-}
-.modal h2{font-family:"Baloo 2";font-size:35px;margin:0 0 8px}
-.modal p{line-height:1.5}
-@media(max-width:600px){
-.screen{padding:15px}
-.panel{padding:21px;border-radius:24px}
-.char{align-items:flex-start;padding:13px}
-.avatar{width:66px;height:66px;min-width:66px}
-.char-info h3{font-size:22px}
-.support{align-self:center}
-.game-actions .smallbtn{padding:6px 7px;font-size:10px}
-.bubble{max-width:88%}
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+<div id="app">
 
-<section id="menu" class="screen active">
-<div class="panel">
-<div class="logo">
-<h1>CRISIS<br>SUPPORT</h1>
-<p>Simulator</p>
-<div class="made">Made by Jarrar</div>
-</div>
+<div class="sky"></div>
+<div class="cloud a"></div>
+<div class="cloud b"></div>
+<div class="hill l"></div>
+<div class="hill r"></div>
+
+<section id="menu" class="screen menu active">
+<div class="menu-box">
+
+<h1 class="game-title">
+<span class="line1">CRISIS</span>
+<span class="line2">SUPPORT</span>
+</h1>
+
+<div class="simulator">SIMULATOR</div>
+<div class="by-jarrar">By Jarrar</div>
+
 <div class="menu-buttons">
-<button class="btn" onclick="showScreen('characters')">PLAY</button>
-<button class="btn blue" onclick="showScreen('tutorial')">TUTORIAL</button>
-<button class="btn pink" onclick="showScreen('credits')">CREDITS</button>
+<button class="big-btn" onclick="showCharacters()">PLAY</button>
+<button class="big-btn" onclick="showScreen('tutorial')">TUTORIAL</button>
+<button class="big-btn" onclick="showScreen('credits')">CREDITS</button>
 </div>
-</div>
-</section>
 
-<section id="characters" class="screen">
-<div style="width:min(900px,100%);margin:auto">
-<div class="header">
-<h2>Choose Someone</h2>
-<button class="btn back" onclick="showScreen('menu')">BACK</button>
-</div>
-<div id="characterList" class="character-list"></div>
+<div class="credits-pill">Made by Jarrar</div>
+
 </div>
 </section>
 
 <section id="tutorial" class="screen">
-<div class="info-box">
-<button class="btn back" onclick="showScreen('menu')">BACK</button>
-<h2>How To Play</h2>
-<h3>1. Choose a character</h3>
-<p>Characters have different difficulty levels. Each scenario lasts 5 minutes.</p>
-<h3>2. Read carefully</h3>
-<p>Listen to what the person is saying. Your goal is to respond with empathy and support.</p>
-<h3>3. Keep the conversation natural</h3>
-<p>Ask questions, acknowledge feelings and avoid judging or dismissing what they say.</p>
-<h3>4. Watch distress</h3>
-<p>The distress meter changes based on your responses. Supportive responses can reduce distress.</p>
-<h3>5. Emergency situations</h3>
-<p>If the character appears to be in immediate danger, encourage them to stay with someone they trust and seek immediate professional or emergency help.</p>
-<h3>6. API key</h3>
-<p>Enter your OpenRouter API key in the game and press SAVE KEY. It is stored only in this browser's local storage.</p>
+<div class="panel">
+
+<button class="small-btn back" onclick="showScreen('menu')">← BACK</button>
+
+<h2>HOW TO PLAY</h2>
+
+<div class="feature-grid">
+
+<div class="feature">
+<b>1. Listen</b><br>
+Read what the character actually says before replying.
+</div>
+
+<div class="feature">
+<b>2. Quick Replies</b><br>
+Use suggested responses or write your own.
+</div>
+
+<div class="feature">
+<b>3. Watch Stats</b><br>
+Stress, trust and connection react to your actual message.
+</div>
+
+<div class="feature">
+<b>4. Silence</b><br>
+After 10 seconds without sending a message, the character may panic.
+</div>
+
+<div class="feature">
+<b>5. XP</b><br>
+Good communication earns XP. Harmful or dismissive messages can lose XP.
+</div>
+
+<div class="feature">
+<b>6. Hint</b><br>
+Use the hint when you are unsure what kind of response would help.
+</div>
+
+<div class="feature">
+<b>7. Daily Scenario</b><br>
+A different scenario can be featured each day.
+</div>
+
+<div class="feature">
+<b>8. Previous Sessions</b><br>
+Your completed sessions and scores are saved locally.
+</div>
+
+</div>
+
+<p>
+<b>Important:</b>
+This is a fictional communication simulator. It does not replace real crisis or emergency support.
+</p>
+
 </div>
 </section>
 
 <section id="credits" class="screen">
-<div class="info-box">
-<button class="btn back" onclick="showScreen('menu')">BACK</button>
-<h2>Credits</h2>
-<p><strong>Made by Jarrar</strong></p>
-<p>Game design, UI and concept by Jarrar.</p>
-<p>Crisis Support Simulator is a fictional conversation simulator designed around empathetic communication.</p>
-<p>The AI responses are generated dynamically through OpenRouter.</p>
+<div class="panel credits">
+
+<button class="small-btn back" onclick="showScreen('menu')">← BACK</button>
+
+<h2>CRISIS SUPPORT SIMULATOR</h2>
+
+<p>
+A fictional conversation simulator focused on listening, empathy, trust and communication.
+</p>
+
+<p><b>Created by Jarrar</b></p>
+
+<h2 style="font-size:25px;margin-top:25px">
+PREVIOUS SESSIONS
+</h2>
+
+<div id="historyList"></div>
+
+</div>
+</section>
+
+<section id="characters" class="screen">
+<div class="panel">
+
+<button class="small-btn back" onclick="showScreen('menu')">← BACK</button>
+
+<h2>CHOOSE A PERSON</h2>
+
+<p style="font-weight:800">
+Daily scenario: <span id="dailyName"></span>
+</p>
+
+<div id="characterGrid" class="character-grid"></div>
+
 </div>
 </section>
 
 <section id="game" class="screen">
-<div class="gamebar">
-<div class="game-title">
-<strong id="gameName">Character</strong>
-<span id="gameDifficulty">EASY</span>
+<div class="game-wrap">
+
+<div class="game-header">
+
+<div class="header-top">
+
+<div class="person">
+
+<div id="headerAvatar"></div>
+
+<div>
+<div class="person-name" id="headerName"></div>
+<div class="person-sub" id="headerMeta"></div>
 </div>
-<div class="game-actions">
-<button class="smallbtn" onclick="togglePause()" id="pauseBtn">PAUSE</button>
-<button class="smallbtn" onclick="toggleMusic()" id="musicBtn">MUSIC ON</button>
-<button class="smallbtn" onclick="endGame()">EXIT</button>
+
+</div>
+
+<div class="timer" id="timer">5:00</div>
+
+<button class="small-btn" onclick="togglePause()">Ⅱ</button>
+
+</div>
+
+<div class="stat-grid">
+
+<div class="stat">
+<label>
+<span>STRESS</span>
+<span id="stressText">50</span>
+</label>
+
+<div class="bar">
+<div id="stressBar" class="fill stress"></div>
 </div>
 </div>
 
-<div id="distressWrap">
-<div class="distress-top"><span>DISTRESS</span><span id="distressText">58%</span></div>
-<div class="bar"><div id="distressBar"></div></div>
+<div class="stat">
+<label>
+<span>TRUST</span>
+<span id="trustText">50</span>
+</label>
+
+<div class="bar">
+<div id="trustBar" class="fill trust"></div>
+</div>
+</div>
+
+<div class="stat">
+<label>
+<span>CONNECTION</span>
+<span id="connectionText">50</span>
+</label>
+
+<div class="bar">
+<div id="connectionBar" class="fill connection"></div>
+</div>
+</div>
+
+</div>
+
+<div class="objective" id="objective"></div>
+
+</div>
+
+<div id="panicNote" class="panic-note">
+PANIC WARNING — You stayed silent too long.
 </div>
 
 <div id="chat" class="chat"></div>
 
+<div id="typing" class="typing">
+● ● ● &nbsp; Typing…
+</div>
+
+<div id="quick" class="quick"></div>
+
 <div class="composer">
-<div class="keyrow">
-<input id="apiKey" type="password" placeholder="OpenRouter API key">
-<button onclick="saveKey()">SAVE KEY</button>
+
+<div class="compose-row">
+
+<textarea
+id="messageInput"
+placeholder="Write your response..."
+maxlength="1000"
+></textarea>
+
+<button class="send" onclick="sendMessage()">
+SEND
+</button>
+
 </div>
-<div class="sendrow">
-<textarea id="message" placeholder="Type your response..." rows="1"></textarea>
-<button id="sendBtn" onclick="sendMessage()">SEND</button>
+
+<div class="tools">
+
+<div class="tools-left">
+
+<button class="tool" onclick="showHint()">
+HINT
+</button>
+
+<button
+class="tool"
+id="musicBtn"
+onclick="toggleMusic()"
+>
+MUSIC: ON
+</button>
+
+<button class="tool" onclick="togglePause()">
+PAUSE
+</button>
+
 </div>
+
+<div class="xp" id="xpText">
+XP 0
+</div>
+
+</div>
+
+<div class="api-row">
+
+<input
+id="apiKey"
+type="password"
+placeholder="Optional OpenRouter API key for AI replies"
+>
+
+<button onclick="saveKey()">
+SAVE KEY
+</button>
+
+</div>
+
+</div>
+
 </div>
 </section>
 
-<div id="pauseOverlay" class="overlay">
+</div>
+
+<div id="pauseModal" class="modal-bg">
+
 <div class="modal">
+
 <h2>PAUSED</h2>
-<p>The timer and conversation are paused.</p>
-<button class="btn green" onclick="togglePause()">RESUME</button>
+
+<p>
+Take a moment. The conversation is paused.
+</p>
+
+<div class="modal-actions">
+
+<button class="big-btn" onclick="togglePause()">
+RESUME
+</button>
+
+<button class="small-btn" onclick="quitGame()">
+QUIT
+</button>
+
+</div>
+
 </div>
 </div>
 
-<script>
-const characters=[
-{id:1,name:"Ali",age:20,difficulty:"EASY",distress:58,reason:"Failed exams",color:"b6e3f4",opening:"I've been pretending I'm okay for months. Honestly, I'm exhausted and I don't know what to do anymore."},
-{id:2,name:"Zain",age:25,difficulty:"NORMAL",distress:72,reason:"Job and money problems",color:"c0aede",opening:"I got fired last week. I keep thinking everyone would be better off if I just disappeared."},
-{id:3,name:"Sara",age:22,difficulty:"NORMAL",distress:76,reason:"Academic and family pressure",color:"ffd5dc",opening:"Everyone keeps telling me to work harder. I am trying, but I feel like I can't keep carrying all of this."},
-{id:4,name:"Hassan",age:31,difficulty:"HARD",distress:84,reason:"Relationship ended and isolation",color:"d1d4f9",opening:"I stopped answering my friends because I don't want them to see how bad things have gotten."},
-{id:5,name:"Uncle Rashid",age:56,difficulty:"HARD",distress:91,reason:"Lost years of savings",color:"ffe2a9",opening:"I lost money I had saved for years. I feel ashamed, and I honestly don't see much point in going forward."},
-{id:6,name:"Mariam",age:28,difficulty:"EXTREME",distress:96,reason:"Overwhelmed and unsafe alone",color:"c7f9cc",opening:"Everything hit me at once. I'm scared of what might happen if I stay alone tonight."}
-];
+<div id="endModal" class="modal-bg">
 
-let current=null;
-let distress=0;
-let timeLeft=300;
-let timer=null;
-let paused=false;
-let musicStarted=false;
-let musicMuted=false;
-let audioCtx=null;
-let masterGain=null;
-let oscillators=[];
-let history=[];
+<div class="modal">
 
-function showScreen(id){
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-if(id!=="game") stopTimer();
-window.scrollTo(0,0);
-}
+<h2 id="endTitle"></h2>
 
-function renderChars(){
-const list=document.getElementById("characterList");
-list.innerHTML=characters.map(c=>{
-let cls=c.difficulty.toLowerCase();
-let avatar=`https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(c.name)}&backgroundColor=${c.color}`;
-return `<div class="char">
-<div class="avatar"><img src="${avatar}" alt=""></div>
-<div class="char-info">
-<h3>${c.name}, ${c.age}</h3>
-<span class="badge ${cls}">${c.difficulty}</span>
-<p>${c.reason}</p>
+<div id="endContent" class="ending"></div>
+
+<div class="modal-actions">
+
+<button class="big-btn" onclick="restartCharacter()">
+RETRY
+</button>
+
+<button class="small-btn" onclick="showCharactersFromEnd()">
+CHARACTERS
+</button>
+
+<button
+class="small-btn"
+onclick="showScreen('menu');closeEnd()"
+>
+MENU
+</button>
+
 </div>
-<button class="btn support" onclick="openInfo(${c.id})">SUPPORT</button>
-</div>`;
-}).join("");
-}
 
-function openInfo(id){
-current=characters.find(c=>c.id===id);
-startGame();
-}
+</div>
+</div>
 
-function saveKey(){
-const key=document.getElementById("apiKey").value.trim();
-if(!key)return;
-localStorage.setItem("crisis_openrouter_key",key);
-document.getElementById("apiKey").value=key;
-alert("API key saved locally.");
-}
+<div id="floating" class="floating"></div>
 
-function loadKey(){
-const key=localStorage.getItem("crisis_openrouter_key")||"";
-document.getElementById("apiKey").value=key;
-}
+<audio
+id="bgMusic"
+src="music.mp3"
+loop
+preload="auto"
+></audio>
 
-function nowTime(){
-return new Date().toLocaleTimeString([],{
-hour:"2-digit",minute:"2-digit"
-});
-}
+<script src="game.js"></script>
 
-function escapeHtml(text){
-return text.replace(/[&<>"']/g,m=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-}[m]));
-}
-
-function addMsg(role,text){
-const chat=document.getElementById("chat");
-const row=document.createElement("div");
-row.className="message-row "+role;
-const bubble=document.createElement("div");
-bubble.className="bubble";
-let meta=role==="user"?`${nowTime()} · ✓✓`:nowTime();
-bubble.innerHTML=`${escapeHtml(text)}<div class="meta">${meta}</div>`;
-row.appendChild(bubble);
-chat.appendChild(row);
-chat.scrollTop=chat.scrollHeight;
-history.push({role:role==="user"?"user":"assistant",content:text});
-}
-
-function updateSad(){
-distress=Math.max(0,Math.min(100,distress));
-document.getElementById("distressBar").style.width=distress+"%";
-document.getElementById("distressText").textContent=distress+"%";
-}
-
-function startGame(){
-if(!current)return;
-showScreen("game");
-distress=current.distress;
-timeLeft=300;
-paused=false;
-history=[];
-document.getElementById("gameName").textContent=current.name;
-document.getElementById("gameDifficulty").textContent=current.difficulty;
-document.getElementById("chat").innerHTML="";
-document.getElementById("pauseOverlay").classList.remove("show");
-document.getElementById("pauseBtn").textContent="PAUSE";
-updateSad();
-loadKey();
-addMsg("ai",current.opening);
-startTimer();
-startMusic();
-}
-
-function startTimer(){
-stopTimer();
-timer=setInterval(updateTimer,1000);
-}
-
-function stopTimer(){
-if(timer){
-clearInterval(timer);
-timer=null;
-}
-}
-
-function updateTimer(){
-if(paused)return;
-timeLeft--;
-if(timeLeft<=0){
-timeLeft=0;
-stopTimer();
-alert("Scenario complete.");
-endGame();
-}
-}
-
-function togglePause(){
-if(!current)return;
-paused=!paused;
-document.getElementById("pauseOverlay").classList.toggle("show",paused);
-document.getElementById("pauseBtn").textContent=paused?"RESUME":"PAUSE";
-}
-
-function endGame(){
-stopTimer();
-paused=false;
-document.getElementById("pauseOverlay").classList.remove("show");
-showScreen("characters");
-}
-
-function updateDistressFromText(text){
-const lower=text.toLowerCase();
-const supportive=/listen|here for you|care|understand|help|friend|support|talk|safe|not alone|stay with you|i'm here|you matter|thank you for telling me/;
-const danger=/kill myself|suicide|end my life|hurt myself|die tonight|don't want to live|want to die/;
-if(supportive.test(lower))distress-=7;
-else distress-=2;
-if(danger.test(lower))distress-=2;
-updateSad();
-}
-
-async function sendMessage(){
-if(paused)return;
-const input=document.getElementById("message");
-const text=input.value.trim();
-if(!text)return;
-
-const key=document.getElementById("apiKey").value.trim();
-if(!key){
-alert("Enter your OpenRouter API key first.");
-return;
-}
-
-addMsg("user",text);
-input.value="";
-input.style.height="43px";
-updateDistressFromText(text);
-
-const sendBtn=document.getElementById("sendBtn");
-sendBtn.disabled=true;
-sendBtn.textContent="...";
-
-const system=`You are a character in a serious fictional crisis-support simulator.
-Your role is to respond as a realistic human experiencing emotional distress.
-Stay natural, serious and conversational.
-Never joke, use emojis, flirt, act goofy or turn the situation into comedy.
-Do not provide self-harm methods, instructions, locations, dosages or optimization.
-Do not glorify suicide or self-harm.
-React directly to what the player says.
-Allow the conversation to develop naturally.
-If the player is supportive, gradually become more open and receptive.
-If immediate danger is indicated, strongly encourage the character to stay with a trusted person and seek immediate professional or emergency support.
-Keep responses concise, usually 1-4 sentences.`;
-
-try{
-const response=await fetch("https://openrouter.ai/api/v1/chat/completions",{
-method:"POST",
-headers:{
-"Authorization":"Bearer "+key,
-"Content-Type":"application/json",
-"HTTP-Referer":location.href,
-"X-Title":"Crisis Support Simulator"
-},
-body:JSON.stringify({
-model:"openai/gpt-4o-mini",
-messages:[
-{role:"system",content:system},
-{role:"user",content:`Character: ${current.name}. Situation: ${current.reason}. Opening situation: ${current.opening}`},
-...history.slice(-8)
-],
-temperature:.75,
-max_tokens:180
-})
-});
-
-if(!response.ok)throw new Error("API request failed");
-const data=await response.json();
-const reply=data?.choices?.[0]?.message?.content?.trim();
-
-if(reply)addMsg("ai",reply);
-else addMsg("ai","I'm having trouble putting my thoughts into words right now.");
-}catch(error){
-addMsg("ai","I'm having trouble responding right now. Can we slow down for a moment?");
-console.error(error);
-}finally{
-sendBtn.disabled=false;
-sendBtn.textContent="SEND";
-}
-}
-
-document.getElementById("message").addEventListener("keydown",e=>{
-if(e.key==="Enter"&&!e.shiftKey){
-e.preventDefault();
-sendMessage();
-}
-});
-
-document.getElementById("message").addEventListener("input",e=>{
-e.target.style.height="43px";
-e.target.style.height=Math.min(e.target.scrollHeight,110)+"px";
-});
-
-function startMusic(){
-if(musicStarted)return;
-try{
-audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-masterGain=audioCtx.createGain();
-masterGain.gain.value=.12;
-masterGain.connect(audioCtx.destination);
-
-const filter=audioCtx.createBiquadFilter();
-filter.type="lowpass";
-filter.frequency.value=900;
-filter.Q.value=.5;
-filter.connect(masterGain);
-
-const notes=[110,146.83,164.81];
-notes.forEach((freq,i)=>{
-const osc=audioCtx.createOscillator();
-const gain=audioCtx.createGain();
-osc.type=i===0?"sine":"triangle";
-osc.frequency.value=freq;
-gain.gain.value=i===0?.10:.035;
-osc.connect(gain);
-gain.connect(filter);
-osc.start();
-oscillators.push(osc);
-});
-
-musicStarted=true;
-}catch(e){
-console.log("Audio unavailable",e);
-}
-}
-
-function toggleMusic(){
-if(!musicStarted){
-startMusic();
-return;
-}
-musicMuted=!musicMuted;
-masterGain.gain.setTargetAtTime(musicMuted?0:.12,audioCtx.currentTime,.08);
-document.getElementById("musicBtn").textContent=musicMuted?"MUTED":"MUSIC ON";
-}
-
-renderChars();
-loadKey();
-</script>
 </body>
-  </html>
+</html>
