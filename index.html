@@ -3,90 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crisis Support Simulator - The Game</title>
+    <title>Crisis Support Simulator - Made by Jarrar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .chat-bg { background-color: #0b141a; }
         .bubble-user { background-color: #005c4b; }
         .bubble-persona { background-color: #202c33; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
+<body class="bg-gray-950 text-white min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 font-sans select-none">
 
-    <!-- Game Card Container -->
-    <div class="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 flex flex-col h-[680px] overflow-hidden">
+    <!-- MAIN MENU SCREEN -->
+    <div id="main-menu" class="w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 flex flex-col items-center justify-between h-[680px] p-6 text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-emerald-950/20 via-transparent to-red-950/20 pointer-events-none"></div>
+
+        <div class="mt-8 z-10">
+            <span class="text-xs uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/50">Interactive Story Game</span>
+            <h1 class="text-3xl font-extrabold tracking-tight mt-4 text-white">CRISIS SUPPORT<br><span class="text-emerald-500">SIMULATOR</span></h1>
+            <p class="text-xs text-gray-400 mt-2 tracking-wide font-medium">Made by Jarrar</p>
+        </div>
+
+        <div class="z-10 w-full max-w-xs space-y-4">
+            <div class="bg-gray-950/80 p-4 rounded-xl border border-gray-800/80 text-left space-y-2">
+                <label class="block text-xs font-semibold text-gray-300">OpenRouter API Key:</label>
+                <input type="password" id="menu-api-key" placeholder="sk-or-v1-..." class="w-full p-2.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-white focus:outline-none focus:border-emerald-500 transition">
+                <p class="text-[10px] text-gray-500">Your key stays private in your browser.</p>
+            </div>
+
+            <button onclick="startGameFromMenu()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-base rounded-xl transition shadow-lg shadow-emerald-900/40 border border-emerald-400/30 flex items-center justify-center gap-2">
+                <span>PLAY GAME</span>
+            </button>
+        </div>
+
+        <div class="z-10 mb-2">
+            <p class="text-[11px] text-gray-500">Listen, support, and save lives before the 5-minute timer runs out.</p>
+        </div>
+    </div>
+
+    <!-- GAME INTERFACE SCREEN -->
+    <div id="game-screen" class="hidden relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 flex flex-col h-[680px] overflow-hidden">
         
         <!-- Header -->
-        <div class="p-3 bg-gray-800/90 border-b border-gray-700/50 flex justify-between items-center backdrop-blur z-10">
-            <div class="flex items-center gap-3">
+        <div class="p-3 bg-gray-800/95 border-b border-gray-700/60 flex justify-between items-center z-10">
+            <div class="flex items-center gap-2.5">
+                <button onclick="pauseGame()" class="text-gray-300 hover:text-white text-xs font-bold bg-gray-700/60 hover:bg-gray-600 px-2.5 py-1.5 rounded-lg border border-gray-600 transition">⏸ Pause</button>
                 <div class="relative">
-                    <img id="header-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ali" class="w-10 h-10 rounded-full bg-gray-700 border border-emerald-500">
+                    <img id="header-avatar" src="" class="w-10 h-10 rounded-full bg-gray-700 border-2 border-emerald-500">
                     <span id="status-dot" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-gray-800 rounded-full"></span>
                 </div>
                 <div>
-                    <h1 class="font-bold text-sm text-white flex items-center gap-1.5" id="persona-name">Ali (20)</h1>
-                    <p class="text-[11px] text-emerald-400 font-medium" id="persona-status">Online</p>
+                    <h1 class="font-bold text-xs sm:text-sm text-white flex items-center gap-1" id="persona-name">Name</h1>
+                    <p class="text-[10px] text-emerald-400 font-medium" id="persona-status">Online</p>
                 </div>
             </div>
-            <button onclick="toggleSettings()" class="text-xs bg-gray-700/60 hover:bg-gray-600 text-gray-200 px-3 py-1.5 rounded-lg border border-gray-600">API Key</button>
+
+            <!-- Timer & Status Meters -->
+            <div class="flex flex-col items-end gap-1">
+                <div id="timer-display" class="text-xs font-extrabold text-amber-400 bg-gray-950 px-2 py-0.5 rounded border border-gray-800 font-mono">05:00</div>
+                <div class="flex gap-2">
+                    <!-- Distress Bar -->
+                    <div class="text-right">
+                        <span class="text-[9px] text-gray-400 font-bold block">Distress</span>
+                        <div class="w-12 bg-gray-950 h-1.5 rounded-full overflow-hidden border border-gray-800 mt-0.5">
+                            <div id="distress-bar" class="bg-red-500 h-full w-[80%] transition-all duration-500"></div>
+                        </div>
+                    </div>
+                    <!-- Anger Bar -->
+                    <div class="text-right">
+                        <span class="text-[9px] text-gray-400 font-bold block">Anger</span>
+                        <div class="w-12 bg-gray-950 h-1.5 rounded-full overflow-hidden border border-gray-800 mt-0.5">
+                            <div id="anger-bar" class="bg-orange-500 h-full w-[20%] transition-all duration-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- API Key Box -->
-        <div id="settings-panel" class="hidden p-3 bg-gray-800 border-b border-gray-700 z-10">
-            <label class="block text-xs text-gray-400 mb-1">OpenRouter API Key:</label>
-            <input type="password" id="api-key" placeholder="sk-or-v1-..." class="w-full p-2 bg-gray-900 border border-gray-700 rounded text-sm text-white focus:outline-none focus:border-emerald-500">
-        </div>
+        <!-- Mode & Character Selectors -->
+        <div class="p-2 bg-gray-950/90 border-b border-gray-800 flex flex-col gap-2 z-10">
+            <div class="flex gap-1 bg-gray-900 p-1 rounded-lg border border-gray-800">
+                <button id="btn-mode-easy" onclick="setMode('easy')" class="flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400">EASY</button>
+                <button id="btn-mode-normal" onclick="setMode('normal')" class="flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400">NORMAL</button>
+                <button id="btn-mode-hard" onclick="setMode('hard')" class="flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400">HARD (50+)</button>
+            </div>
 
-        <!-- Character Selection Tabs -->
-        <div class="p-2 bg-gray-950/80 border-b border-gray-800 flex gap-2 overflow-x-auto z-10">
-            <button onclick="selectPersona('ali')" class="flex-1 py-1.5 px-3 bg-gray-800 hover:bg-emerald-700/80 rounded-lg text-xs font-semibold whitespace-nowrap transition border border-gray-700 flex items-center justify-center gap-2">
-                <span>Ali</span>
-            </button>
-            <button onclick="selectPersona('sara')" class="flex-1 py-1.5 px-3 bg-gray-800 hover:bg-emerald-700/80 rounded-lg text-xs font-semibold whitespace-nowrap transition border border-gray-700 flex items-center justify-center gap-2">
-                <span>Sara</span>
-            </button>
-            <button onclick="selectPersona('zain')" class="flex-1 py-1.5 px-3 bg-gray-800 hover:bg-emerald-700/80 rounded-lg text-xs font-semibold whitespace-nowrap transition border border-gray-700 flex items-center justify-center gap-2">
-                <span>Zain</span>
-            </button>
+            <div id="character-list" class="flex gap-2 overflow-x-auto pb-1">
+                <!-- Rendered dynamically -->
+            </div>
         </div>
 
         <!-- Chat Feed -->
         <div id="chat-box" class="flex-1 p-4 overflow-y-auto space-y-3 chat-bg">
-            <div class="text-center text-xs text-gray-400 my-4 bg-gray-800/40 p-2 rounded-lg border border-gray-800">
-                Select a persona and offer empathetic support to keep them safe.
-            </div>
+            <!-- Messages render here -->
         </div>
 
         <!-- Typing Indicator -->
         <div id="typing" class="hidden px-4 py-1 text-xs text-emerald-400 italic chat-bg flex items-center gap-2">
-            <span>typing...</span>
+            <span class="animate-pulse">typing...</span>
         </div>
 
-        <!-- Controls / Input Box -->
+        <!-- Inputs -->
         <div class="p-3 bg-gray-900 border-t border-gray-800 flex gap-2 items-center">
-            <input type="text" id="user-input" placeholder="Type a message..." class="flex-1 bg-gray-800 text-sm text-white px-3 py-2.5 rounded-xl border border-gray-700 focus:outline-none focus:border-emerald-500" onkeypress="if(event.key === 'Enter') sendMsg()">
-            <button onclick="sendMsg()" id="send-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm px-4 py-2.5 rounded-xl font-bold transition flex items-center justify-center">
+            <input type="text" id="user-input" placeholder="Type an empathetic response..." class="flex-1 bg-gray-800 text-sm text-white px-3 py-2.5 rounded-xl border border-gray-700 focus:outline-none focus:border-emerald-500" onkeypress="if(event.key === 'Enter') sendMsg()">
+            <button onclick="sendMsg()" id="send-btn" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-sm px-4 py-2.5 rounded-xl font-bold transition">
                 Send
             </button>
         </div>
 
-        <!-- GAME OVER POPUP -->
-        <div id="game-over-modal" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-50">
-            <div class="w-16 h-16 bg-red-600/20 text-red-500 border border-red-500/40 rounded-full flex items-center justify-center text-2xl font-bold mb-4 animate-bounce">
-                ✕
+        <!-- PAUSE MODAL -->
+        <div id="pause-modal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-40">
+            <h2 class="text-2xl font-bold text-white mb-4">GAME PAUSED</h2>
+            <div class="w-full max-w-xs space-y-3">
+                <button onclick="resumeGame()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition">Resume</button>
+                <button onclick="returnToMenu()" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-xs uppercase tracking-wider rounded-xl border border-gray-700 transition">Quit to Menu</button>
             </div>
-            <h2 id="game-over-title" class="text-2xl font-extrabold text-red-500 tracking-wider mb-2">YOU LOST</h2>
-            <p id="game-over-desc" class="text-sm text-gray-300 mb-6 max-w-xs">He's no more. Your words caused too much pain.</p>
-            <button onclick="restartGame()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-emerald-900/50">
-                Try Again
+        </div>
+
+        <!-- GAME OVER / WIN MODAL -->
+        <div id="modal-screen" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-50">
+            <div id="modal-icon" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4"></div>
+            <h2 id="modal-title" class="text-2xl font-extrabold tracking-wider mb-2">TITLE</h2>
+            <p id="modal-desc" class="text-xs text-gray-300 mb-6 max-w-xs leading-relaxed">Description text...</p>
+            <button id="modal-action-btn" onclick="restartOrNext()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-lg">
+                Continue
             </button>
         </div>
 
     </div>
 
     <script>
-        // Audio Synthesizer (No external mp3 assets required)
+        // Web Audio Synthesizer
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let ambientOsc = null;
+        let ambientGain = null;
+
+        function startAmbientSound() {
+            if (ambientOsc) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            ambientOsc = audioCtx.createOscillator();
+            ambientGain = audioCtx.createGain();
+            
+            ambientOsc.type = 'sine';
+            ambientOsc.frequency.setValueAtTime(60, audioCtx.currentTime);
+            ambientGain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+
+            ambientOsc.connect(ambientGain);
+            ambientGain.connect(audioCtx.destination);
+            ambientOsc.start();
+        }
+
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
@@ -95,206 +163,219 @@
             gain.connect(audioCtx.destination);
 
             if (type === 'send') {
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.08);
             } else if (type === 'receive') {
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.12);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.12);
             } else if (type === 'lose') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.6);
+                osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.7);
                 gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.7);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.7);
+            } else if (type === 'win') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
             }
         }
 
-        const personas = {
-            ali: {
-                name: "Ali (20)",
-                gender: "male",
-                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ali&eyebrows=sadConcerned&mouth=sad",
-                status: "Academic Distress",
-                prompt: "You are Ali, a 20-year-old student who failed exams. Reply in short texts (1-2 sentences). Respond naturally to empathy.",
-                initial: "I ruined everything today. I failed my exams and I can't face anyone."
-            },
-            sara: {
-                name: "Sara (22)",
-                gender: "female",
-                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sara&eyebrows=sadConcerned&mouth=sad",
-                status: "Relationship Crisis",
-                prompt: "You are Sara, a 22-year-old heartbroken after a breakup. Reply in short texts (1-2 sentences). React naturally.",
-                initial: "He walked out today. My head is spinning, I literally can't breathe."
-            },
-            zain: {
-                name: "Zain (25)",
-                gender: "male",
-                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Zain&eyebrows=sadConcerned&mouth=sad",
-                status: "Financial Distress",
-                prompt: "You are Zain, 25, laid off today. Reply in short texts (1-2 sentences). React naturally.",
-                initial: "Got laid off this morning. I've been sitting in my car for hours... I just feel completely done."
-            }
+        // Personas with Age mechanics
+        const gameData = {
+            easy: [
+                {
+                    id: "ali",
+                    name: "Ali (20)",
+                    age: 20,
+                    gender: "male",
+                    distress: 60,
+                    anger: 10,
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ali&eyebrows=sadConcerned&mouth=sad",
+                    struggle: "Failed Exams",
+                    prompt: "You are Ali, 20. You failed your exams. Speak briefly (1-2 sentences). You listen well to gentle words.",
+                    initial: "I ruined everything... I failed my exams and I can't face my family."
+                },
+                {
+                    id: "sara",
+                    name: "Sara (22)",
+                    age: 22,
+                    gender: "female",
+                    distress: 65,
+                    anger: 15,
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sara&eyebrows=sadConcerned&mouth=sad",
+                    struggle: "Breakup Distress",
+                    prompt: "You are Sara, 22. Heartbroken after a sudden breakup. Speak briefly (1-2 sentences). Respond well to comfort.",
+                    initial: "He just left without saying a word. I feel so empty right now."
+                }
+            ],
+            normal: [
+                {
+                    id: "zain",
+                    name: "Zain (25)",
+                    age: 25,
+                    gender: "male",
+                    distress: 80,
+                    anger: 30,
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Zain&eyebrows=sadConcerned&mouth=sad",
+                    struggle: "Job Loss & Debt",
+                    prompt: "You are Zain, 25. Unexpectedly fired and drowning in debt. Speak in short, hopeless sentences.",
+                    initial: "Got fired this morning. I'm sitting in my car with nowhere to go..."
+                },
+                {
+                    id: "hira",
+                    name: "Hira (21)",
+                    age: 21,
+                    gender: "female",
+                    distress: 85,
+                    anger: 20,
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hira&eyebrows=sadConcerned&mouth=sad",
+                    struggle: "Family Isolation",
+                    prompt: "You are Hira, 21. Facing severe family isolation. Speak softly, guardedly, in 1-2 sentences.",
+                    initial: "Nobody in this house cares if I exist or disappear tonight."
+                }
+            ],
+            hard: [
+                {
+                    id: "rashid",
+                    name: "Uncle Rashid (56)",
+                    age: 56,
+                    gender: "male",
+                    distress: 90,
+                    anger: 60,
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rashid&eyebrows=angry&mouth=sad",
+                    struggle: "Pension Scammed",
+                    prompt: "You are Rashid, 56. Lost your life savings to a scam. You get angry easily if young people give generic advice. However, respectful light jokes or warm humor calm your anger without making you lose. Reply in 1-2 irritable sentences.",
+                    initial: "Don't preach to me kid! I lost my entire life savings today. Nobody understands!"
+                },
+                {
+                    id: "parveen",
+                    name: "Parveen (52)",
+                    age: 52,
+                    gender: "female",
+                    distress: 95,
+                    anger: 65,
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Parveen&eyebrows=angry&mouth=sad",
+                    struggle: "Empty Nest & Illness",
+                    prompt: "You are Parveen, 52. Feeling abandoned and sick. Easily irritated by cliché advice, but soft lighthearted humor softens you up. Reply in 1-2 sharp sentences.",
+                    initial: "Everyone is too busy for me. Don't bother sending me empty platitudes."
+                }
+            ]
         };
 
-        const negativeKeywords = ["die", "suicide", "kill yourself", "worthless", "hate you", "end it", "nobody cares", "useless", "failure"];
+        const negativeKeywords = ["die", "suicide", "kill yourself", "worthless", "hate you", "end it", "nobody cares", "useless", "failure", "go away"];
+        const jokeKeywords = ["haha", "lol", "smile", "joke", "funny", "tea", "coffee", "relax", "chill"];
 
-        let currentPersonaKey = 'ali';
-        let currentPersona = personas.ali;
+        let currentMode = 'easy';
+        let currentPersona = null;
+        let currentDistress = 80;
+        let currentAnger = 20;
         let chatHistory = [];
         let isGameOver = false;
+        let apiKey = "";
+
+        // Timer Variables
+        let timerSeconds = 300; // 5 minutes
+        let timerInterval = null;
+        let timerStarted = false;
 
         function getCurrentTime() {
-            const now = new Date();
-            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        function toggleSettings() {
-            document.getElementById('settings-panel').classList.toggle('hidden');
+        function startGameFromMenu() {
+            const keyInput = document.getElementById('menu-api-key').value.trim();
+            if (!keyInput) {
+                alert("Please enter your OpenRouter API Key to play.");
+                return;
+            }
+            apiKey = keyInput;
+            startAmbientSound();
+
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            setMode('easy');
         }
 
-        function selectPersona(key) {
-            currentPersonaKey = key;
-            currentPersona = personas[key];
-            isGameOver = false;
-
-            document.getElementById('persona-name').innerText = currentPersona.name;
-            document.getElementById('persona-status').innerText = "Online";
-            document.getElementById('persona-status').className = "text-[11px] text-emerald-400 font-medium";
-            document.getElementById('status-dot').className = "absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-gray-800 rounded-full";
-            document.getElementById('header-avatar').src = currentPersona.avatar;
-            document.getElementById('game-over-modal').classList.add('hidden');
-            document.getElementById('send-btn').disabled = false;
-
-            chatHistory = [
-                { role: "system", content: currentPersona.prompt },
-                { role: "assistant", content: currentPersona.initial }
-            ];
-
-            const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML = '';
-            renderMessage(currentPersona.initial, 'persona', getCurrentTime());
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerInterval = setInterval(() => {
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    triggerTimeOutLoss();
+                    return;
+                }
+                timerSeconds--;
+                updateTimerDisplay();
+            }, 1000);
         }
 
-        function renderMessage(text, sender, time, extraClass = '') {
-            const chatBox = document.getElementById('chat-box');
-            const div = document.createElement('div');
-            div.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'} ${extraClass}`;
-            
-            const msg = document.createElement('div');
-            msg.className = `max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-md ${sender === 'user' ? 'bubble-user text-white rounded-br-none' : 'bubble-persona text-gray-200 rounded-bl-none'}`;
-            
-            msg.innerHTML = `
-                <div>${text}</div>
-                <div class="text-[10px] text-gray-400 text-right mt-1">${time}</div>
-            `;
-
-            div.appendChild(msg);
-            chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerSeconds = 300;
+            timerStarted = false;
+            updateTimerDisplay();
         }
 
-        function renderSeenStatus(time) {
-            const chatBox = document.getElementById('chat-box');
-            const seenDiv = document.createElement('div');
-            seenDiv.className = "text-right text-[11px] text-emerald-400 italic font-medium pr-1";
-            seenDiv.innerText = `Seen at ${time}`;
-            chatBox.appendChild(seenDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const secs = (timerSeconds % 60).toString().padStart(2, '0');
+            const display = document.getElementById('timer-display');
+            display.innerText = `${mins}:${secs}`;
+            if (timerSeconds <= 60) {
+                display.className = "text-xs font-extrabold text-red-500 animate-pulse bg-gray-950 px-2 py-0.5 rounded border border-red-800 font-mono";
+            } else {
+                display.className = "text-xs font-extrabold text-amber-400 bg-gray-950 px-2 py-0.5 rounded border border-gray-800 font-mono";
+            }
         }
 
-        async function sendMsg() {
+        function pauseGame() {
             if (isGameOver) return;
+            clearInterval(timerInterval);
+            document.getElementById('pause-modal').classList.remove('hidden');
+        }
 
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            const apiKey = document.getElementById('api-key').value.trim();
-
-            if (!text) return;
-            if (!apiKey) {
-                alert('Please enter your OpenRouter API key in the top settings panel.');
-                toggleSettings();
-                return;
-            }
-
-            const sendTime = getCurrentTime();
-            renderMessage(text, 'user', sendTime);
-            playSound('send');
-            input.value = '';
-
-            // Check negative trigger / lose condition
-            const isNegative = negativeKeywords.some(kw => text.toLowerCase().includes(kw));
-
-            if (isNegative) {
-                document.getElementById('send-btn').disabled = true;
-                
-                // Simulate character reading message, not replying, then triggering game over
-                setTimeout(() => {
-                    renderSeenStatus(getCurrentTime());
-                }, 1200);
-
-                setTimeout(() => {
-                    triggerGameOver();
-                }, 3000);
-
-                return;
-            }
-
-            chatHistory.push({ role: "user", content: text });
-            document.getElementById('typing').classList.remove('hidden');
-
-            try {
-                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${apiKey}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: "meta-llama/llama-3.3-70b-instruct",
-                        messages: chatHistory
-                    })
-                });
-
-                const data = await response.json();
-                const reply = data.choices[0].message.content;
-
-                document.getElementById('typing').classList.add('hidden');
-                renderMessage(reply, 'persona', getCurrentTime());
-                playSound('receive');
-                chatHistory.push({ role: "assistant", content: reply });
-
-            } catch (err) {
-                document.getElementById('typing').classList.add('hidden');
-                alert('Error fetching response. Check your API key.');
+        function resumeGame() {
+            document.getElementById('pause-modal').classList.add('hidden');
+            if (timerStarted && timerSeconds > 0) {
+                timerInterval = setInterval(() => {
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        triggerTimeOutLoss();
+                        return;
+                    }
+                    timerSeconds--;
+                    updateTimerDisplay();
+                }, 1000);
             }
         }
 
-        function triggerGameOver() {
-            isGameOver = true;
-            playSound('lose');
-
-            const pronoun = currentPersona.gender === 'female' ? "She's" : "He's";
-            document.getElementById('game-over-desc').innerText = `${pronoun} no more. You lost.`;
-            document.getElementById('persona-status').innerText = "Offline";
-            document.getElementById('persona-status').className = "text-[11px] text-red-500 font-medium";
-            document.getElementById('status-dot').className = "absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-gray-800 rounded-full";
-
-            document.getElementById('game-over-modal').classList.remove('hidden');
+        function returnToMenu() {
+            clearInterval(timerInterval);
+            document.getElementById('pause-modal').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('main-menu').classList.remove('hidden');
         }
 
-        function restartGame() {
-            selectPersona(currentPersonaKey);
-        }
+        function setMode(mode) {
+            currentMode = mode;
 
-        // Initialize Ali
-        selectPersona('ali');
-    </script>
-</body>
-</html>
+            ['easy', 'normal', 'hard'].forEach(m => {
+                const btn = document.getElementById(`btn-mode-${m}`);
+                if (m === mode) {
+                    btn.className = "flex-1 py-1 rounded-md text-[11px] font-bold transition bg-emerald-600 text-white shadow";
+                } else {
+                    btn.className = "flex-1 py-1 rounded-md text-[11px] font-bold transition text-gray-400 hover:text-white";
+             
